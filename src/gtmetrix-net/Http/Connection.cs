@@ -1,0 +1,154 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Net.Http.Headers;
+using GTmetrix.Logic;
+using GTmetrix.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace GTmetrix.Http
+{
+    public class Connection : IDisposable
+    {
+        private readonly string _apiKey;
+        private readonly string _username;
+        private readonly Uri _ApiUrl = new Uri("https://gtmetrix.com/api/");
+        private HttpClient _client;
+        private JsonSerializerSettings _serializerSettings;
+
+        internal Connection(string apiKey, string username, HttpMessageHandler handler)
+        {
+            _client = new HttpClient(handler) {BaseAddress = _ApiUrl};
+            _client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            ConfigureSerialization();
+
+            _apiKey = apiKey;
+            _username = username;
+
+            SetAuthenticationHeader();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public static Connection Create(string apiKey, string username, IWebProxy proxy = null)
+        {
+            apiKey.ThrowIfNullOrEmpty("apiKey");
+            username.ThrowIfNullOrEmpty("username");
+
+            var handler = new HttpClientHandler {Proxy = proxy};
+            return new Connection(apiKey, username, handler);
+        }
+
+        internal async Task<IApiResponse<TResponse>> Execute<TResponse>(ApiRequest apiRequest,
+            CancellationToken cancellationToken)
+        {
+            using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
+            {
+                if (!(apiRequest.Body is NoInstructionsRequest))
+                {
+                    // Todo: Update
+
+                    //var json = JsonConvert.SerializeObject(apiRequest.Body, _serializerSettings);
+                    //requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var content = new FormUrlEncodedContent(new[]
+                    {
+                        new KeyValuePair<string, string>("url", "http://www.devslice.net")
+                    });
+
+                    requestMessage.Content = content;
+                }
+
+                using (
+                    var responseMessage =
+                        await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
+                {
+                    var test = await responseMessage.Content.ReadAsStringAsync();
+
+                    return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        private void ConfigureSerialization()
+        {
+            _serializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCaseExceptDictionaryKeysResolver(),
+                Converters = new List<JsonConverter> { new StringEnumConverter { CamelCaseText = true } },
+                NullValueHandling = NullValueHandling.Ignore
+            };
+        }
+
+        private void SetAuthenticationHeader()
+        {
+            var byteArray = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", _username, _apiKey));
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+        }
+
+        private async Task<T> ParseResponseMessageToObject<T>(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
+        {
+            using (var stream = await responseMessage.Content.ReadAsStreamAsync())
+            {
+                //Todo: Implement cancellationToken support
+                //await stream.CopyToAsync(responseStream2, 4096, cancellationToken);
+                return JsonConvert.DeserializeObject<T>(new StreamReader(stream).ReadToEnd(), _serializerSettings);
+            }
+        }
+
+        private async Task<IApiResponse<TResponse>> BuildResponse<TResponse>(HttpResponseMessage message, CancellationToken cancellationToken)
+        {
+            var response = new ApiResponse<TResponse>
+            {
+                StatusCode = message.StatusCode,
+                Success = message.IsSuccessStatusCode
+            };
+
+            if (message.IsSuccessStatusCode)
+            {
+                response.Body = await ParseResponseMessageToObject<TResponse>(message, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                var errorResponse =
+                    await
+                        ParseResponseMessageToObject<ErrorResult>(message, cancellationToken).ConfigureAwait(false);
+
+                if (errorResponse != null)
+                {
+                    response.Error = errorResponse.Error;
+                }
+            }
+
+            return response;
+        }
+
+        ~Connection()
+        {
+            Dispose(false);
+        }
+
+        public virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_client != null)
+                {
+                    _client.Dispose();
+                    _client = null;
+                }
+            }
+        }
+    }
+}
