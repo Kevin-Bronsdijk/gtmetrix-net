@@ -9,7 +9,7 @@ using System.Threading;
 namespace Tests
 {
     [TestClass]
-    [Ignore]
+    //[Ignore]
     public class IntergrationTests
     {
         [TestInitialize]
@@ -99,7 +99,7 @@ namespace Tests
         {
             var client = HelperFunctions.CreateWorkingClient();
 
-            var response = client.SubmitTest(new TestRequest(new Uri(TestData.testWebsite)));
+            var response = client.SubmitTest(new TestRequest(new Uri(TestData.TestWebsite)));
 
             var result = response.Result;
 
@@ -119,11 +119,11 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Client_CheckTestJustCreated_IsTrue()
+        public void Client_CheckTestSimple_IsTrue()
         {
             var client = HelperFunctions.CreateWorkingClient();
 
-            var response = client.SubmitTest(new TestRequest(new Uri(TestData.testWebsite)));
+            var response = client.SubmitTest(new TestRequest(new Uri(TestData.TestWebsite)));
             var result = response.Result;
 
             var responseCheck = client.GetTest(result.Body.TestId);
@@ -138,7 +138,7 @@ namespace Tests
         {
             var client = HelperFunctions.CreateWorkingClient();
 
-            var response = client.SubmitTest(new TestRequest(new Uri(TestData.testWebsite)));
+            var response = client.SubmitTest(new TestRequest(new Uri(TestData.TestWebsite)));
             var result = response.Result;
 
             for (int i = 0; i < 10; i++)
@@ -154,6 +154,50 @@ namespace Tests
                     break;
                 }
             }
+        }
+
+        [TestMethod]
+        public void Client_InvalidTestServerRegionId_IsTrue()
+        {
+            var client = HelperFunctions.CreateWorkingClient();
+
+            var testrequest = new TestRequest(new Uri(TestData.TestWebsite));
+            testrequest.Location = TestData.InvalidTestServerRegionId;
+
+            var response = client.SubmitTest(testrequest);
+            var result = response.Result;
+
+            Assert.IsTrue(result.StatusCode == HttpStatusCode.BadRequest);
+        }
+
+        [TestMethod]
+        public void Client_InvalidbrowserId_IsTrue()
+        {
+            var client = HelperFunctions.CreateWorkingClient();
+
+            var testrequest = new TestRequest(new Uri(TestData.TestWebsite), Locations.London);
+            testrequest.Browser = TestData.InvalidbrowserId;
+
+            var response = client.SubmitTest(testrequest);
+            var result = response.Result;
+
+            Assert.IsTrue(result.StatusCode == HttpStatusCode.BadRequest);
+        }
+
+        [TestMethod]
+        public void Client_LondonChrome_IsTrue()
+        {
+            var client = HelperFunctions.CreateWorkingClient();
+
+            var testrequest = new TestRequest(new Uri(TestData.TestWebsite), 
+                Locations.London, Browsers.Chrome);
+
+            var response = client.SubmitTest(testrequest);
+            var result = response.Result;
+
+            Assert.IsTrue(result.StatusCode == HttpStatusCode.OK);
+            Assert.IsTrue(result.Body.PollStateUrl != string.Empty);
+            Assert.IsTrue(result.Body.TestId != string.Empty);
         }
     }
 }

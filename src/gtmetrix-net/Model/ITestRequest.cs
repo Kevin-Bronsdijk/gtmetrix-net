@@ -1,5 +1,4 @@
-﻿
-namespace GTmetrix.Model
+﻿namespace GTmetrix.Model
 {
     public interface ITestRequest: IRequest
     {

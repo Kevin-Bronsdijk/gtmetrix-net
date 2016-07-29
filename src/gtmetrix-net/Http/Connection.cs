@@ -55,18 +55,9 @@ namespace GTmetrix.Http
         {
             using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
             {
-                if (!(apiRequest.Body is NoInstructionsRequest))
+                if (!(apiRequest.Body is NoInstructionsRequest) && apiRequest.Body != null)
                 {
-                    // Todo: Update
-
-                    //var json = JsonConvert.SerializeObject(apiRequest.Body, _serializerSettings);
-                    //requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                    var content = new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("url", "http://www.devslice.net")
-                    });
-
+                    var content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
                     requestMessage.Content = content;
                 }
 
