@@ -130,7 +130,6 @@ namespace Tests
             var resultCheck = responseCheck.Result;
 
             Assert.IsTrue(resultCheck.StatusCode == HttpStatusCode.OK);
-            Assert.IsTrue(resultCheck.Body.State != string.Empty);
         }
 
         [TestMethod]
@@ -148,7 +147,7 @@ namespace Tests
                 var responseCheck = client.GetTest(result.Body.TestId);
                 var resultCheck = responseCheck.Result;
 
-                if (resultCheck.Body.State == "completed")
+                if (resultCheck.Body.State == ResultStates.Completed)
                 {
                     Assert.IsTrue(resultCheck.StatusCode == HttpStatusCode.OK);
                     break;
@@ -198,6 +197,34 @@ namespace Tests
             Assert.IsTrue(result.StatusCode == HttpStatusCode.OK);
             Assert.IsTrue(result.Body.PollStateUrl != string.Empty);
             Assert.IsTrue(result.Body.TestId != string.Empty);
+        }
+
+        [TestMethod]
+        public void Client_CheckTestPollStatusResults_IsTrue()
+        {
+            var client = HelperFunctions.CreateWorkingClient();
+
+            var response = client.SubmitTest(new TestRequest(
+                new Uri(TestData.TestWebsite), 
+                Locations.London, 
+                Browsers.Chrome));
+
+            var result = response.Result;
+
+            for (int i = 0; i < 10; i++)
+            {
+                Thread.Sleep(new TimeSpan(0, 0, 15));
+
+                var responseCheck = client.GetTest(result.Body.TestId);
+                var resultCheck = responseCheck.Result;
+
+                if (resultCheck.Body.State == ResultStates.Completed)
+                {
+                    Assert.IsTrue(resultCheck.StatusCode == HttpStatusCode.OK);
+                    Assert.IsTrue(resultCheck.Body.Results.PageLoadTime != 0);
+                    break;
+                }
+            }
         }
     }
 }

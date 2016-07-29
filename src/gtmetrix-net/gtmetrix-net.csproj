@@ -50,7 +50,10 @@
     <Compile Include="Http\IApiResponse.cs" />
     <Compile Include="Http\ApiRequest.cs" />
     <Compile Include="Model\Browsers.cs" />
+    <Compile Include="Model\Results.cs" />
+    <Compile Include="Model\Resources.cs" />
     <Compile Include="Model\Locations.cs" />
+    <Compile Include="Model\ResultStates.cs" />
     <Compile Include="Model\Status.cs" />
     <Compile Include="Model\ErrorResult.cs" />
     <Compile Include="Http\IApiRequest.cs" />

@@ -90,6 +90,8 @@ namespace GTmetrix.Http
 
         private async Task<T> ParseResponseMessageToObject<T>(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
+            //var test = await responseMessage.Content.ReadAsStringAsync();
+
             using (var stream = await responseMessage.Content.ReadAsStreamAsync())
             {
                 //Todo: Implement cancellationToken support
