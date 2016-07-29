@@ -9,7 +9,7 @@ using System.Threading;
 namespace Tests
 {
     [TestClass]
-    //[Ignore]
+    [Ignore]
     public class IntergrationTests
     {
         [TestInitialize]
