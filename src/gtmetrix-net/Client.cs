@@ -5,6 +5,8 @@ using GTmetrix.Http;
 using GTmetrix.Model;
 using System.Net.Http;
 using System.Collections.Generic;
+using System.IO;
+using GTmetrix.Logic;
 
 namespace GTmetrix
 {
@@ -56,10 +58,8 @@ namespace GTmetrix
 
         public Task<IApiResponse<TestResult>> GetTest(string testId, CancellationToken cancellationToken)
         {
-            if (testId == null)
-            {
-                throw new ArgumentNullException(nameof(testId));
-            }
+            testId.ThrowIfNullOrEmpty(nameof(testId));
+
             if (cancellationToken == null)
             {
                 throw new ArgumentNullException(nameof(cancellationToken));
@@ -130,6 +130,31 @@ namespace GTmetrix
                 (
                 new ApiRequest(new NoInstructionsRequest(), "0.1/status", HttpMethod.Get),
                 cancellationToken
+                );
+
+            return message;
+        }
+
+        public Task<IApiResponse<Byte[]>> DownloadResource(string testId, ResourceTypes resourceType)
+        {
+            return DownloadResource(testId, resourceType, default(CancellationToken));
+        }
+
+        public Task<IApiResponse<Byte[]>> DownloadResource(string testId, ResourceTypes resourceType, 
+            CancellationToken cancellationToken)
+        {
+            testId.ThrowIfNullOrEmpty(nameof(testId));
+
+            if (cancellationToken == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationToken));
+            }
+
+            var message = _connection.Download
+                (
+                    new ApiRequest(new NoInstructionsRequest(), 
+                        $"0.1/test/{testId}/{Helper.GetResourceUriSuffix(resourceType)}", HttpMethod.Get),
+                        cancellationToken
                 );
 
             return message;

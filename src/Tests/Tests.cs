@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GTmetrix.Http;
 using GTmetrix;
+using GTmetrix.Model;
 
 namespace Tests
 {
@@ -99,6 +100,106 @@ namespace Tests
         }
 
         [TestMethod]
+        public void Client_SubmitTestRequestCannotBeNull_IsTrue()
+        {
+            try
+            {
+                var connection = Connection.Create("key", "secret");
+                var client = new Client(connection);
+
+                client.SubmitTest(null);
+            }
+            catch (ArgumentException ex)
+            {
+                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: testRequest");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(false, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void Client_GetTestRequestTestIdCannotBeNull_IsTrue()
+        {
+            try
+            {
+                var connection = Connection.Create("key", "secret");
+                var client = new Client(connection);
+
+                client.GetTest(null);
+            }
+            catch (ArgumentException ex)
+            {
+                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: testId");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(false, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void Client_GetTestRequestTestIdCannotBeEmpty_IsTrue()
+        {
+            try
+            {
+                var connection = Connection.Create("key", "secret");
+                var client = new Client(connection);
+
+                client.GetTest(string.Empty);
+            }
+            catch (ArgumentException ex)
+            {
+                Assert.IsTrue(ex.Message == "Argument must not be the empty string.\r\nParameter name: testId");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(false, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void Client_DownloadResourceIdCannotBeNull_IsTrue()
+        {
+            try
+            {
+                var connection = Connection.Create("key", "secret");
+                var client = new Client(connection);
+
+                client.DownloadResource(null, ResourceTypes.PageSpeed);
+            }
+            catch (ArgumentException ex)
+            {
+                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: testId");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(false, ex.Message);
+            }
+        }
+
+        [TestMethod]
+        public void Client_DownloadResourceIdCannotBeEmpty_IsTrue()
+        {
+            try
+            {
+                var connection = Connection.Create("key", "secret");
+                var client = new Client(connection);
+
+                client.DownloadResource(string.Empty, ResourceTypes.PageSpeed);
+            }
+            catch (ArgumentException ex)
+            {
+                Assert.IsTrue(ex.Message == "Argument must not be the empty string.\r\nParameter name: testId");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(false, ex.Message);
+            }
+        }
+
+        [TestMethod]
         public void Client_NoErrors_IsTrue()
         {
             try
@@ -166,6 +267,14 @@ namespace Tests
             {
                 Assert.IsTrue(false, "Exception");
             }
+        }
+
+        [TestMethod]
+        public void Helper_GetUriBasedOnResourceType_isTrue()
+        {
+            var suffix = GTmetrix.Logic.Helper.GetResourceUriSuffix(ResourceTypes.PageSpeed);
+
+            Assert.IsTrue(suffix == "pagespeed");
         }
     }
 }

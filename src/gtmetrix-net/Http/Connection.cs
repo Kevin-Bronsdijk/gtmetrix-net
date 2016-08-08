@@ -65,9 +65,35 @@ namespace GTmetrix.Http
                     var responseMessage =
                         await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                    var test = await responseMessage.Content.ReadAsStringAsync();
+                    // var test = await responseMessage.Content.ReadAsStringAsync();
 
                     return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        internal async Task<IApiResponse<Byte[]>> Download(ApiRequest apiRequest, CancellationToken cancellationToken)
+        {
+            using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
+            {
+                using (
+                    var responseMessage =
+                        await _client.SendAsync(requestMessage, 
+                        HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
+                {
+                    var response = new ApiResponse<Byte[]>
+                    {
+                        StatusCode = responseMessage.StatusCode,
+                        Success = responseMessage.IsSuccessStatusCode
+                    };
+
+                    if (responseMessage.IsSuccessStatusCode)
+                    {
+                        var httpStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                        response.Body = Helper.ReadFully(httpStream);
+                    }
+
+                    return response;
                 }
             }
         }

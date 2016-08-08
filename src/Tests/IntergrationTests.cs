@@ -3,6 +3,7 @@ using GTmetrix.Http;
 using GTmetrix.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 using System.Net;
 using System.Threading;
 
@@ -222,6 +223,19 @@ namespace Tests
                 {
                     Assert.IsTrue(resultCheck.StatusCode == HttpStatusCode.OK);
                     Assert.IsTrue(resultCheck.Body.Results.PageLoadTime != 0);
+
+                    // Check resouces
+                    var responseResource = client.DownloadResource(result.Body.TestId, ResourceTypes.PageSpeed);
+                    var resultResource = responseResource.Result;
+
+                    Assert.IsTrue(resultResource.StatusCode == HttpStatusCode.OK);
+                    Assert.IsTrue(resultResource.Body != null);
+
+                    var pageSpeedJson = System.Text.Encoding.UTF8.GetString(resultResource.Body);
+
+                    Assert.IsTrue(pageSpeedJson != string.Empty);
+                    Assert.IsTrue(pageSpeedJson.Contains("pageSpeed"));
+
                     break;
                 }
             }
