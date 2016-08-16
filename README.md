@@ -20,6 +20,7 @@ Within the current version it’s possible to submit test requests and retrieve 
   * [Get the test results](#get-the-test-results)
   * [Get a list of test locations](#get-a-list-of-test-locations)
   * [Get a list of browsers](#get-a-list-of-browsers)
+  * [Download test resources](#Download-test-resources)
   
 ## Getting Started
 
@@ -114,6 +115,27 @@ if(response.Result.StatusCode == HttpStatusCode.OK)
     }
 }
 ```
+
+### Download test resources
+
+Test resources such as the Har, SpeedTest and Yslow files can be retrieved using `client.DownloadResource("test_id", ResourceTypes.{type})`. The information is exposed as a bytes array and can be accessed as displayed in the example below:
+
+```C#
+var response = client.DownloadResource("test_id", ResourceTypes.PageSpeed);
+
+if(response.Result.StatusCode == HttpStatusCode.OK)
+{
+    var pageSpeedJson = System.Text.Encoding.UTF8.GetString(resultResource.Body);
+}
+```
+Currently, I’ve only implemented Har, Yslow  and Speedtest. Support for other resource types and retrieving multiple resources at once will be added in the future.
+
+
+
+
+
+
+
 
 ## LICENSE - MIT
 
