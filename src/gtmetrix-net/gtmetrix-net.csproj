@@ -51,6 +51,7 @@
     <Compile Include="Http\ApiRequest.cs" />
     <Compile Include="Model\Browsers.cs" />
     <Compile Include="Model\ConnectionTypes.cs" />
+    <Compile Include="Model\Features.cs" />
     <Compile Include="Model\ResourceTypes.cs" />
     <Compile Include="Model\Results.cs" />
     <Compile Include="Model\Resources.cs" />

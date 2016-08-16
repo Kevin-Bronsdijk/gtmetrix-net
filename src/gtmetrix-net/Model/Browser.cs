@@ -38,40 +38,7 @@ namespace GTmetrix.Model
         [JsonProperty("browser")]
         public string BrowserName { get; set; }
 
-        /// <summary>
-        /// Whether this browser supports AdBlock.
-        /// </summary>
-        [JsonProperty("features.adblock")]
-        public bool Adblock { get; set; }
-
-        /// <summary>
-        /// Supports specifying cookies.
-        /// </summary>
-        [JsonProperty("features.cookies")]
-        public bool Cookies { get; set; }
-
-        /// <summary>
-        /// Supports URL whitelist/blacklists.
-        /// </summary>
-        [JsonProperty("features.filtering")]
-        public bool Filtering { get; set; }
-
-        /// <summary>
-        /// Supports HTTP authentication.
-        /// </summary>
-        [JsonProperty("features.http_auth")]
-        public bool HttpAuth { get; set; }
-
-        /// <summary>
-        /// Supports connection throttling.
-        /// </summary>
-        [JsonProperty("features.throttle")]
-        public bool Throttle { get; set; }
-
-        /// <summary>
-        /// Browser supports video generation
-        /// </summary>
-        [JsonProperty("features.video")]
-        public bool Video { get; set; }
+        [JsonProperty("features")]
+        public Features Features { get; set; }
     }
 }
