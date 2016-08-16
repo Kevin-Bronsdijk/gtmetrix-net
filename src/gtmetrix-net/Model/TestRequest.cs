@@ -1,4 +1,5 @@
 using System;
+using GTmetrix.Logic;
 
 namespace GTmetrix.Model
 {
@@ -8,15 +9,22 @@ namespace GTmetrix.Model
         {
         }
 
-        public TestRequest(Uri url, Locations location) : this(url, location, Browsers.Chrome)
+        public TestRequest(Uri url, Locations location) : 
+            this(url, location, Browsers.Chrome)
         {
         }
 
-        public TestRequest(Uri url, Locations location, Browsers browsers)
+        public TestRequest(Uri url, Locations location, Browsers browser) : 
+            this(url, location, browser, ConnectionTypes.Unthrottled)
+        {
+        }
+
+        public TestRequest(Uri url, Locations location, Browsers browser, ConnectionTypes connectionType)
         {
             Url = url.OriginalString;
             Location = (int)location;
-            Browser = (int)browsers;
+            Browser = (int)browser;
+            ConnectionSpeed = Helper.GetConnectionSpeed(connectionType);
         }
     }
 }

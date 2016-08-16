@@ -276,5 +276,13 @@ namespace Tests
 
             Assert.IsTrue(suffix == "pagespeed");
         }
+
+        [TestMethod]
+        public void Helper_GetConnectionSpeedBasedOnConnectionType_isTrue()
+        {
+            var value = GTmetrix.Logic.Helper.GetConnectionSpeed(ConnectionTypes.Unthrottled);
+
+            Assert.IsTrue(value == "");
+        }
     }
 }

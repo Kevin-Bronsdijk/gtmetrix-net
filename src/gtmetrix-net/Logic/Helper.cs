@@ -28,10 +28,28 @@ namespace GTmetrix.Logic
                 {"Yslow", "yslow" }
             };
 
-            string abbreviation;
-            resourceTypes.TryGetValue(resourceType.ToString(), out abbreviation);
+            string value;
+            resourceTypes.TryGetValue(resourceType.ToString(), out value);
 
-            return abbreviation;
+            return value;
+        }
+
+        public static string GetConnectionSpeed(ConnectionTypes connectionType)
+        {
+            var resourceTypes = new Dictionary<string, string>
+            {
+                {"Unthrottled", ""},
+                {"Cable", "5000/1000/30"},
+                {"DSL", "1500/384/50" },
+                {"Mobile3G", "1600/768/200"},
+                {"Mobile2G", "240/200/400" },
+                {"56K", "50/30/125"}
+            };
+
+            string value;
+            resourceTypes.TryGetValue(connectionType.ToString(), out value);
+
+            return value;
         }
 
         public static byte[] ReadFully(Stream input)
