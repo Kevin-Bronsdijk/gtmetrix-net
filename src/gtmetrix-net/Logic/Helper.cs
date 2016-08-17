@@ -1,7 +1,9 @@
-﻿using GTmetrix.Model;
+﻿using GTmetrix.Http;
+using GTmetrix.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 
 namespace GTmetrix.Logic
 {
@@ -25,7 +27,12 @@ namespace GTmetrix.Logic
             {
                 {"Har", "har"},
                 {"PageSpeed", "pagespeed"},
-                {"Yslow", "yslow" }
+                {"Yslow", "yslow" },
+                {"PagespeedFiles", "pagespeed-files"},
+                {"Screenshot", "screenshot"},
+                {"PdfReport", "report-pdf"},
+                {"PdfReportExtended", "report-pdf?full=1"},
+                {"Video", "video"},
             };
 
             string value;
@@ -52,7 +59,7 @@ namespace GTmetrix.Logic
             return value;
         }
 
-        public static byte[] ReadFully(Stream input)
+        internal static byte[] ReadFully(Stream input)
         {
             byte[] buffer = new byte[16 * 1024];
             using (MemoryStream ms = new MemoryStream())
@@ -64,6 +71,18 @@ namespace GTmetrix.Logic
                 }
                 return ms.ToArray();
             }
+        }
+
+        internal static ApiResponse<TestResult> CreateFailedResponse(string message)
+        {
+            var response = new ApiResponse<TestResult>()
+            {
+                Error = message,
+                StatusCode = HttpStatusCode.InternalServerError,
+                Success = false
+            };
+
+            return response;
         }
     }
 }

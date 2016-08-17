@@ -8,6 +8,10 @@ namespace GTmetrix.Model
         Har = 1,
         PageSpeed = 2,
         Yslow = 4,
-        // Not all types have been implemented yet
+        PagespeedFiles = 8,
+        Screenshot = 16,
+        PdfReport = 32,
+        PdfReportExtended = 64,
+        Video = 128
     }
 }

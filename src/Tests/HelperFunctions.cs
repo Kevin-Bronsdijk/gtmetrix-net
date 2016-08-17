@@ -1,5 +1,8 @@
 ﻿using GTmetrix;
 using GTmetrix.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Tests
 {
@@ -9,6 +12,11 @@ namespace Tests
         {
             var connection = Connection.Create(Settings.ApiKey, Settings.Username);
             return new Client(connection);
+        }
+
+        public static IEnumerable<T> GetValues<T>()
+        {
+            return Enum.GetValues(typeof(T)).Cast<T>();
         }
     }
 }

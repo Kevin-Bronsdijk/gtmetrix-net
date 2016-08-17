@@ -270,7 +270,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Helper_GetUriBasedOnResourceType_isTrue()
+        public void Helper_GetUriBasedOnResourceType_IsTrue()
         {
             var suffix = GTmetrix.Logic.Helper.GetResourceUriSuffix(ResourceTypes.PageSpeed);
 
@@ -278,7 +278,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Helper_GetConnectionSpeedBasedOnConnectionType_isTrue()
+        public void Helper_GetConnectionSpeedBasedOnConnectionType_IsTrue()
         {
             var value = GTmetrix.Logic.Helper.GetConnectionSpeed(ConnectionTypes.Unthrottled);
 

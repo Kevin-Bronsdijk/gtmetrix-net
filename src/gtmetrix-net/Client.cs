@@ -5,7 +5,6 @@ using GTmetrix.Http;
 using GTmetrix.Model;
 using System.Net.Http;
 using System.Collections.Generic;
-using System.IO;
 using GTmetrix.Logic;
 
 namespace GTmetrix
@@ -13,6 +12,8 @@ namespace GTmetrix
     public class Client : IDisposable
     {
         private Connection _connection;
+        private static TimeSpan _timeToWait = TimeSpan.FromSeconds(2);
+        private static int _maxRetryCount = 10;
 
         public Client(Connection connection)
         {
@@ -51,6 +52,19 @@ namespace GTmetrix
             return message;
         }
 
+        public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest)
+        {
+            return await SubmitTestAsync(testRequest, default(CancellationToken));
+        }
+
+        public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest, CancellationToken cancellationToken)
+        {
+            var submitTestResult = await SubmitTest(testRequest, cancellationToken);
+            var testResult = await GetTestAsync(submitTestResult.Body.TestId, cancellationToken);
+
+            return testResult;
+        }
+
         public Task<IApiResponse<TestResult>> GetTest(string testId)
         {
             return GetTest(testId, default(CancellationToken));
@@ -70,6 +84,39 @@ namespace GTmetrix
                 cancellationToken);
 
             return message;
+        }
+
+        public async Task<IApiResponse<TestResult>> GetTestAsync(string testId)
+        {
+            return await GetTestAsync(testId, default(CancellationToken));
+        }
+
+        public async Task<IApiResponse<TestResult>> GetTestAsync(string testId, CancellationToken cancellationToken)
+        {
+            int fetchCounter = 0;
+            IApiResponse<TestResult> result;
+
+            do
+            {
+                if (fetchCounter > _maxRetryCount)
+                {
+                    result = Helper.CreateFailedResponse("Maximum retry count exceeded");
+                    break;
+                }
+            
+                result = await GetTest(testId, cancellationToken);
+                fetchCounter++;
+
+                if ((result.Success && result.Body.State == ResultStates.Completed) || !result.Success)
+                {
+                    break;
+                }
+
+                await Task.Delay(_timeToWait, cancellationToken);
+            }
+            while (!cancellationToken.IsCancellationRequested);
+
+            return result;
         }
 
         public Task<IApiResponse<List<Location>>> Locations()

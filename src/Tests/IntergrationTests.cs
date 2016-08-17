@@ -206,11 +206,13 @@ namespace Tests
             var client = HelperFunctions.CreateWorkingClient();
 
             var response = client.SubmitTest(new TestRequest(
-                new Uri(TestData.TestWebsite), 
-                Locations.London, 
+                new Uri(TestData.TestWebsite),
+                Locations.London,
                 Browsers.Chrome));
 
             var result = response.Result;
+
+            Assert.IsTrue(result.StatusCode == HttpStatusCode.OK);
 
             for (int i = 0; i < 10; i++)
             {
@@ -238,6 +240,77 @@ namespace Tests
 
                     break;
                 }
+            }
+        }
+
+        [TestMethod]
+        public void Client_GetTestAsyncResults_IsTrue()
+        {
+            var client = HelperFunctions.CreateWorkingClient();
+
+            var response = client.SubmitTest(new TestRequest(
+                new Uri(TestData.TestWebsite),
+                Locations.London,
+                Browsers.Chrome));
+
+            var result = response.Result;
+
+            Assert.IsTrue(result.StatusCode == HttpStatusCode.OK);
+
+            var responseCheck = client.GetTestAsync(result.Body.TestId);
+            var resultCheck = responseCheck.Result;
+
+            Assert.IsTrue(resultCheck.StatusCode == HttpStatusCode.OK);
+            Assert.IsTrue(resultCheck.Body.Results.PageLoadTime != 0);
+        }
+
+        [TestMethod]
+        public void Client_SubmitTestAsync_IsTrue()
+        {
+            var client = HelperFunctions.CreateWorkingClient();
+
+            var response = client.SubmitTestAsync(new TestRequest(
+                new Uri(TestData.TestWebsite),
+                Locations.London,
+                Browsers.Chrome));
+
+            var result = response.Result;
+
+            Assert.IsTrue(result.StatusCode == HttpStatusCode.OK);
+            Assert.IsTrue(result.Body.Results.PageLoadTime != 0);
+        }
+
+        [TestMethod]
+        public void Client_DownloadAllResouces_IsTrue()
+        {
+            var client = HelperFunctions.CreateWorkingClient();
+
+            var response = client.SubmitTest(new TestRequest(
+                new Uri(TestData.TestWebsite),
+                Locations.London,
+                Browsers.Chrome)
+            {
+                GenerateVideo = true
+            });
+
+            var result = response.Result;
+
+            Assert.IsTrue(result.StatusCode == HttpStatusCode.OK);
+
+            var responseCheck = client.GetTestAsync(result.Body.TestId);
+            var resultCheck = responseCheck.Result;
+
+            Assert.IsTrue(resultCheck.StatusCode == HttpStatusCode.OK);
+            Assert.IsTrue(resultCheck.Body.Results.PageLoadTime != 0);
+            Assert.IsTrue(resultCheck.Body.Resources.VideoUrl != null);
+
+            var resourceTypes = HelperFunctions.GetValues<ResourceTypes>();
+
+            foreach (var resourceType in resourceTypes)
+            {
+                var responseResource = client.DownloadResource(result.Body.TestId, resourceType);
+                File.WriteAllBytes(AppDomain.CurrentDomain.BaseDirectory + "\\" + resourceType + "." + resourceType, 
+                    responseResource.Result.Body);
             }
         }
     }
