@@ -24,7 +24,7 @@ Within the current version it’s possible to submit test requests and retrieve 
   * [Async](#async)
   * [Get a list of test locations](#get-a-list-of-test-locations)
   * [Get a list of browsers](#get-a-list-of-browsers)
-  * [Download test resources](#Download-test-resources)
+  * [Download test resources](#download-test-resources)
   
 ## Getting Started
 
