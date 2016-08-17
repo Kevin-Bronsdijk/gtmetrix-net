@@ -47,13 +47,19 @@ var connection = Connection.Create("Api_Key", "Username");
 
 ### Start a request
 
-Starting a new Test request is simple. The first step is to create a new `TestRequest` found within the `GTmetrix.Model` namespace. The constructor overloads can be used to override the browser and location defaults. Or assign optional values by using its properties. After having setup your `TestRequest`, call `SubmitTest`, part of the GTmetrix-net client, and make sure to provide the test request.   
+Starting a new Test request is simple. The first step is to create a new `TestRequest` found within the `GTmetrix.Model` namespace. The constructor overloads are helpers and can be used to override the browser, location and connection speed defaults. Or assign optional values by using its properties. After having setup your `TestRequest`, call `SubmitTest`, part of the GTmetrix-net client, and make sure to provide the test request.   
 
 ```C#
 var client = Client(connection);   
 
-var request = new TestRequest(new Uri("http://devslice.net"), 
-                Locations.London, Browsers.Chrome);
+var request = new TestRequest(
+    new Uri("http://devslice.net"),
+    Locations.London,
+    Browsers.Chrome)
+    {
+        // Optional settings
+        EnableAdBlock = true, 
+    };                             
                 
 var response = client.SubmitTest(request);
 
@@ -61,6 +67,17 @@ if(response.Result.StatusCode == HttpStatusCode.OK)
 {
     var id = response.result.Body.TestId;
 }
+```
+
+You can also provide the raw API values for browser, location and connection speed if desired. The possible values are available within gtmetrix's API docs.
+
+```C#
+new TestRequest(new Uri(TestData.TestWebsite))
+{
+    Browser = 3,
+    ConnectionSpeed = "5000/1000/30",
+    Location = 2
+};
 ```
 
 ### Get the test results
