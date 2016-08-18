@@ -8,6 +8,8 @@ namespace GTmetrix.Model
         {
         }
 
+        //Todo: Add test id
+
         /// <summary>
         /// The current state of the test.
         /// </summary>

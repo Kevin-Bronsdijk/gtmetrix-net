@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace WebTest.Controllers
 {
@@ -12,6 +13,12 @@ namespace WebTest.Controllers
         public ActionResult CanGetLocations()
         {
             return ReturnResults(TestLogic.Tests.CanGetLocations());
+        }
+        public async Task<ActionResult> CanSubmitTestAsync()
+        {
+            var testvalue = await TestLogic.Tests.CanSubmitTestAsync();
+
+            return ReturnResults(testvalue);
         }
     }
 }

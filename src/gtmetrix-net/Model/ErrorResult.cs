@@ -4,7 +4,7 @@ namespace GTmetrix.Model
 {
     public class ErrorResult
     {
-        [JsonProperty("message")]
+        [JsonProperty("error")]
         public string Error { get; set; }
     }
 }

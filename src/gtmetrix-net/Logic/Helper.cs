@@ -73,12 +73,13 @@ namespace GTmetrix.Logic
             }
         }
 
-        internal static ApiResponse<TestResult> CreateFailedResponse(string message)
+        internal static ApiResponse<TestResult> CreateFailedResponse(string message, 
+            HttpStatusCode statusCode = HttpStatusCode.InternalServerError)
         {
             var response = new ApiResponse<TestResult>()
             {
                 Error = message,
-                StatusCode = HttpStatusCode.InternalServerError,
+                StatusCode = statusCode,
                 Success = false
             };
 

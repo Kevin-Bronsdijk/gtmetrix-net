@@ -4,7 +4,8 @@
 $urlsToTest =
 @(
 'http://localhost:65461/test/CanGetLocations', `
-'http://localhost:65461/test/CanCreateClient' `
+'http://localhost:65461/test/CanCreateClient', `
+'http://localhost:65461/test/CanSubmitTestAsync' `
 )
 
 $urlsToTest |  `
