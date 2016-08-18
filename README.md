@@ -1,6 +1,6 @@
 ﻿GTmetrix .Net client
 =============
-[![Build status](https://ci.appveyor.com/api/projects/status/q5bowvblktu9hs9a?svg=true)](https://ci.appveyor.com/project/Kevin-Bronsdijk/gtmetrix-net) [![NuGet](https://img.shields.io/nuget/v/gtmetrix-net.svg?maxAge=2592000)](https://www.nuget.org/packages/gtmetrix-net/)
+[![Build status](https://ci.appveyor.com/api/projects/status/q5bowvblktu9hs9a?svg=true)](https://ci.appveyor.com/project/Kevin-Bronsdijk/gtmetrix-net) [![NuGet](https://img.shields.io/nuget/v/gtmetrix-net.svg)](https://www.nuget.org/packages/gtmetrix-net/)
 ***
 
 ### GTmetrix .Net client targeting .Net framework version 4.5.2 and higher.
