@@ -16,11 +16,15 @@ Within the current version it’s possible to submit test requests and retrieve 
 * [Installation](#installation)
 * [How To Use](#how-to-use)
   * [Authentication](#authentication)
-  * [Start a request](#start-a-request)
-  * [Get the test results](#get-the-test-results)
+  * [Submit a test request](#submit-a-test-request)
+  * [Simple request](#simple-request)
+  * [Async request](#async-request)
+  * [Retrieve the test results](#retrieve-the-test-results)
+  * [Manually polling](#manually-polling)
+  * [Async](#async)
   * [Get a list of test locations](#get-a-list-of-test-locations)
   * [Get a list of browsers](#get-a-list-of-browsers)
-  * [Download test resources](#Download-test-resources)
+  * [Download test resources](#download-test-resources)
   
 ## Getting Started
 
@@ -37,7 +41,6 @@ Install-Package gtmetrix-net
 
 The first step is to authenticate by providing your unique API Key and Username while creating a new client connection. Use your e-mail address as the username.
 
-
 ```C#
 using GTmetrix;
 using GTmetrix.Http;
@@ -45,9 +48,12 @@ using GTmetrix.Http;
 var connection = Connection.Create("Api_Key", "Username");
 ```
 
-### Start a request
+### Submit a test request
+There are two ways of submitting a test request; The first one works similar to the underlying GTmetrix API and will return a test id. This id can be used to retrieve the test results at a later time. The second option is a async call which will return as soon as your test results are available. Let’s take a look at both options.
 
-Starting a new Test request is simple. The first step is to create a new `TestRequest` found within the `GTmetrix.Model` namespace. The constructor overloads are helpers and can be used to override the browser, location and connection speed defaults. Or assign optional values by using its properties. After having setup your `TestRequest`, call `SubmitTest`, part of the GTmetrix-net client, and make sure to provide the test request.   
+### Simple request
+
+Submitting a new Test request is simple. The first step is to create a new `TestRequest` found within the `GTmetrix.Model` namespace. The constructor overloads are helpers and can be used to override the browser, location and connection speed defaults. Or assign optional values by using its properties. After having setup your `TestRequest`, call `SubmitTest`, part of the GTmetrix-net client, and make sure to provide the test request.   
 
 ```C#
 var client = Client(connection);   
@@ -69,6 +75,32 @@ if(response.Result.StatusCode == HttpStatusCode.OK)
 }
 ```
 
+### Async request
+
+By using the Async version you don’t have to deal with separate calls for submitting and retrieving your test. This is especially helpful when you want to results as soon as available.
+
+```C#
+var client = Client(connection);   
+
+var request = new TestRequest(
+    new Uri("http://devslice.net"),
+    Locations.London,
+    Browsers.Chrome)
+    {
+        // Optional settings
+        EnableAdBlock = true, 
+    };                             
+                
+var response = client.SubmitTestAsync(request);
+
+if (response.Result.StatusCode == HttpStatusCode.OK && 
+    response.Result.Body.State == ResultStates.Completed)
+{
+  var pageLoadTime = response.Result.Body.Results.PageLoadTime;
+  ...
+}
+```
+
 You can also provide the raw API values for browser, location and connection speed if desired. The possible values are available within gtmetrix's API docs.
 
 ```C#
@@ -80,15 +112,36 @@ new TestRequest(new Uri(TestData.TestWebsite))
 };
 ```
 
-### Get the test results
+### Retrieve the test results
 
-Test results can be gathered by calling `client.GetTest("test_id");`. Just like the underlying GTmetrix API, some data might not be present based on the status your test request. In the future a poll helper will be added to eliminate the need to write additional polling code.
+There are two possible ways to retrieve the test results; manually polling or awaiting the call using the async version.
 
 Note that the test ID is only valid for 3 days. The GTmetrix report for the URL will be valid for 30 days.
 
+### Manually polling
+
+Test results can be gathered by calling `client.GetTest("test_id");`. Just like the underlying GTmetrix API, some data might not be present based on the status your test request (Queued, Started, Completed, Error). Therefore, you will have to manually poll until the status has changed to Completed or Error. 
+
 ```C#
+// poll loop logic
 var response = client.GetTest("Test_Id");
 var result = responseCheck.Result;
+
+if (result.StatusCode == HttpStatusCode.OK && result.Body.State == ResultStates.Completed)
+{
+  var pageLoadTime = result.Body.Results.PageLoadTime;
+  ...
+}
+// poll loop logic
+```
+
+### Async
+
+The Async version eliminates the need to poll manually. By default, the API will internally check if the test results are available. At the moment polling will be performed internally for a maximum of 10 times with 2 a second wait period between each poll.
+
+```C#
+var response = client.GetTestAsync(result.Body.TestId);
+var result = response.Result;
 
 if (result.StatusCode == HttpStatusCode.OK && result.Body.State == ResultStates.Completed)
 {
@@ -145,14 +198,17 @@ if(response.Result.StatusCode == HttpStatusCode.OK)
     var pageSpeedJson = System.Text.Encoding.UTF8.GetString(resultResource.Body);
 }
 ```
-Currently, I’ve only implemented Har, Yslow  and Speedtest. Support for other resource types and retrieving multiple resources at once will be added in the future.
 
+Saving a file to disk is simple as can be seen in the example below;
 
+```C#
+var response = client.DownloadResource("test_id", ResourceTypes.PageSpeed);
 
-
-
-
-
+if(response.Result.StatusCode == HttpStatusCode.OK)
+{
+    File.WriteAllBytes("c:\\test\\PageSpeed.json", responseResource.Result.Body);
+}
+```
 
 ## LICENSE - MIT
 
