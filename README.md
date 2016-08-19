@@ -137,7 +137,7 @@ if (result.StatusCode == HttpStatusCode.OK && result.Body.State == ResultStates.
 
 ### Async
 
-The Async version eliminates the need to poll manually. By default, the API will internally check if the test results are available. At the moment polling will be performed internally for a maximum of 10 times with 2 a second wait period between each poll.
+The Async version eliminates the need to poll manually. By default, the wrapper will periodically check if the test results are available. At the moment polling will be performed for a maximum of 10 times with a 2 second wait period between each poll request.
 
 ```C#
 var response = client.GetTestAsync(result.Body.TestId);
@@ -195,7 +195,7 @@ var response = client.DownloadResource("test_id", ResourceTypes.PageSpeed);
 
 if(response.Result.StatusCode == HttpStatusCode.OK)
 {
-    var pageSpeedJson = System.Text.Encoding.UTF8.GetString(resultResource.Body);
+    var pageSpeedJson = System.Text.Encoding.UTF8.GetString(response.Result.Body);
 }
 ```
 
@@ -206,7 +206,7 @@ var response = client.DownloadResource("test_id", ResourceTypes.PageSpeed);
 
 if(response.Result.StatusCode == HttpStatusCode.OK)
 {
-    File.WriteAllBytes("c:\\test\\PageSpeed.json", responseResource.Result.Body);
+    File.WriteAllBytes("c:\\test\\PageSpeed.json", response.Result.Body);
 }
 ```
 
