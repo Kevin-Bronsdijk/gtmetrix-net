@@ -12,7 +12,7 @@ namespace GTmetrix
     public class Client : IDisposable
     {
         private Connection _connection;
-        private static TimeSpan _timeToWait = TimeSpan.FromSeconds(2);
+        private static int _defaultRetryInterval = 3;
         private static int _maxRetryCount = 10;
 
         public Client(Connection connection)
@@ -56,8 +56,18 @@ namespace GTmetrix
         {
             return await SubmitTestAsync(testRequest, default(CancellationToken));
         }
+        public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest, int retryInterval)
+        {
+            return await SubmitTestAsync(testRequest, retryInterval, default(CancellationToken));
+        }
 
         public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest, CancellationToken cancellationToken)
+        {
+            return await SubmitTestAsync(testRequest, _defaultRetryInterval, cancellationToken);
+        }
+
+        public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest, int retryInterval, 
+            CancellationToken cancellationToken)
         {
             if (testRequest == null)
             {
@@ -68,12 +78,17 @@ namespace GTmetrix
                 throw new ArgumentNullException(nameof(cancellationToken));
             }
 
+            ValiadateRetryInterval(retryInterval);
+
             var submitTestResult = await _connection.Execute<SubmitTestResult>(
                 new ApiRequest(testRequest, "0.1/test", HttpMethod.Post),
                 cancellationToken).ConfigureAwait(false);
 
             if (submitTestResult.Success)
             {
+                // Always wait first
+                await Task.Delay(TimeToWait(retryInterval), cancellationToken);
+
                 var testResult = await GetTestAsync(submitTestResult.Body.TestId, 
                     cancellationToken).ConfigureAwait(false);
 
@@ -106,15 +121,28 @@ namespace GTmetrix
             return message;
         }
 
+
         public async Task<IApiResponse<TestResult>> GetTestAsync(string testId)
         {
             return await GetTestAsync(testId, default(CancellationToken));
         }
 
+        public async Task<IApiResponse<TestResult>> GetTestAsync(string testId, int retryInterval)
+        {
+            return await GetTestAsync(testId, retryInterval, default(CancellationToken));
+        }
+
         public async Task<IApiResponse<TestResult>> GetTestAsync(string testId, CancellationToken cancellationToken)
+        {
+            return await GetTestAsync(testId, _defaultRetryInterval, cancellationToken);
+        }
+
+        public async Task<IApiResponse<TestResult>> GetTestAsync(string testId, int retryInterval, CancellationToken cancellationToken)
         {
             int fetchCounter = 0;
             IApiResponse<TestResult> result;
+
+            ValiadateRetryInterval(retryInterval);
 
             do
             {
@@ -123,7 +151,7 @@ namespace GTmetrix
                     result = Helper.CreateFailedResponse("Maximum retry count exceeded");
                     break;
                 }
-            
+
                 result = await GetTest(testId, cancellationToken).ConfigureAwait(false);
                 fetchCounter++;
 
@@ -133,7 +161,7 @@ namespace GTmetrix
                     break;
                 }
 
-                await Task.Delay(_timeToWait, cancellationToken);
+                await Task.Delay(TimeToWait(retryInterval), cancellationToken);
             }
             while (!cancellationToken.IsCancellationRequested);
 
@@ -227,6 +255,19 @@ namespace GTmetrix
                 );
 
             return message;
+        }
+
+        private TimeSpan TimeToWait(int retryInterval)
+        {
+            return TimeSpan.FromSeconds(retryInterval);
+        }
+
+        private void ValiadateRetryInterval(int retryInterval)
+        {
+            if (retryInterval < 2 && retryInterval > 60)
+            {
+                throw new ArgumentException("retryInterval must be 2 and 60 seconds");
+            }
         }
 
         ~Client()
