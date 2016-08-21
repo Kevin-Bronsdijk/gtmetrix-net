@@ -56,7 +56,7 @@ There are two ways of submitting a test request; The first one works similar to 
 Submitting a new Test request is simple. The first step is to create a new `TestRequest` found within the `GTmetrix.Model` namespace. The constructor overloads are helpers and can be used to override the browser, location and connection speed defaults. Or assign optional values by using its properties. After having setup your `TestRequest`, call `SubmitTest`, part of the GTmetrix-net client, and make sure to provide the test request.   
 
 ```C#
-var client = Client(connection);   
+var client = new Client(connection);   
 
 var request = new TestRequest(
     new Uri("http://devslice.net"),
