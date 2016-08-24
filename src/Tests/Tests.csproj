@@ -53,6 +53,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="HelperFunctions.cs" />
+    <Compile Include="UserSettingsIntergrationTests.cs" />
     <Compile Include="IntergrationTests.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="TestData.cs" />

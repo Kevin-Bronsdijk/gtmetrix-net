@@ -65,7 +65,7 @@ namespace GTmetrix.Http
                     var responseMessage =
                         await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                    // var test = await responseMessage.Content.ReadAsStringAsync();
+                   // var test = await responseMessage.Content.ReadAsStringAsync();
 
                     return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
                 }

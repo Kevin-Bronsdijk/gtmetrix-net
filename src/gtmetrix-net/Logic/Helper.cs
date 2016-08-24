@@ -73,10 +73,10 @@ namespace GTmetrix.Logic
             }
         }
 
-        internal static ApiResponse<TestResult> CreateFailedResponse(string message, 
+        internal static ApiResponse<TResponse> CreateFailedResponse<TResponse>(string message, 
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError)
         {
-            var response = new ApiResponse<TestResult>()
+            var response = new ApiResponse<TResponse>()
             {
                 Error = message,
                 StatusCode = statusCode,
@@ -84,6 +84,12 @@ namespace GTmetrix.Logic
             };
 
             return response;
+        }
+
+        internal static bool IsHtml(string value)
+        {
+            // Sufficient for now
+            return value.Contains("html");
         }
     }
 }

@@ -96,7 +96,7 @@ namespace GTmetrix
             }
             else
             {
-                return Helper.CreateFailedResponse(string.Empty, submitTestResult.StatusCode);
+                return Helper.CreateFailedResponse<TestResult>(string.Empty, submitTestResult.StatusCode);
             }
         }
 
@@ -148,7 +148,7 @@ namespace GTmetrix
             {
                 if (fetchCounter > _maxRetryCount)
                 {
-                    result = Helper.CreateFailedResponse("Maximum retry count exceeded");
+                    result = Helper.CreateFailedResponse<TestResult>("Maximum retry count exceeded");
                     break;
                 }
 
