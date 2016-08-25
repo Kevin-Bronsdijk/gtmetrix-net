@@ -25,7 +25,8 @@ Within the current version it’s possible to submit test requests and retrieve 
   * [Get a list of test locations](#get-a-list-of-test-locations)
   * [Get a list of browsers](#get-a-list-of-browsers)
   * [Download test resources](#download-test-resources)
-  
+* [Manage user settings](#manage-user-settings)
+
 ## Getting Started
 
 First you need to sign up at [gtmetrix.com](https://gtmetrix.com/) and obtain your unique **API Key**. You can generate or view your API key at the API Key box at the top of the [API Details page](https://gtmetrix.com/api/). Once you have set up your account and generated the Key, you can start using the GTmetrix .Net client.
@@ -80,7 +81,7 @@ if(response.Result.StatusCode == HttpStatusCode.OK)
 By using the Async version you don’t have to deal with separate calls for submitting and retrieving your test. This is especially helpful when you want to results as soon as available.
 
 ```C#
-var client = Client(connection);   
+var client = new Client(connection);   
 
 var request = new TestRequest(
     new Uri("http://devslice.net"),
@@ -208,6 +209,33 @@ if(response.Result.StatusCode == HttpStatusCode.OK)
 {
     File.WriteAllBytes("c:\\test\\PageSpeed.json", response.Result.Body);
 }
+```
+
+## Manage user settings
+
+Manage you user settings programmatically is simple as displayed within the code samples below. However, make sure you are using the UserSettingsClient and matching UserSettingsConnection. This is required because this information isn’t exposed via the official GTmetrix API. Use your email address and GTmetrix password when initiating a new connection.
+
+Currently most information is exposed as read-only. You can however add and remove CDN entries.
+
+```C#
+var client = new UserSettingsClient(UserSettingsConnection.Create("Email", "Password"));
+var response = client.GetSettings();
+
+if(response.Result.StatusCode == HttpStatusCode.OK)
+{
+    var email = response.Result.Body.Email;
+    ...
+}
+```
+
+```C#
+// Retrieve settings first as per above example.
+
+userSettings.Cdn.Add("cdn.devslice.net");
+
+var response = client.UpdateSettings(userSettings);
+...
+
 ```
 
 ## LICENSE - MIT
