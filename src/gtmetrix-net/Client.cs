@@ -56,6 +56,7 @@ namespace GTmetrix
         {
             return await SubmitTestAsync(testRequest, default(CancellationToken));
         }
+
         public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest, int retryInterval)
         {
             return await SubmitTestAsync(testRequest, retryInterval, default(CancellationToken));

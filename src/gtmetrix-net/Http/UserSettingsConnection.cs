@@ -24,6 +24,8 @@ namespace GTmetrix.Http
         private HttpClient _client;
         private JsonSerializerSettings _serializerSettings;
         CookieContainer _cookies = new CookieContainer();
+        DateTime _lastSuccessfulAuthentication;
+        private int _authenticationTimeout = 5;
 
         internal UserSettingsConnection(string email, string password, HttpClientHandler handler)
         {
@@ -46,8 +48,8 @@ namespace GTmetrix.Http
 
         public static UserSettingsConnection Create(string email, string password, IWebProxy proxy = null)
         {
-            password.ThrowIfNullOrEmpty("password");
-            email.ThrowIfNullOrEmpty("email");
+            password.ThrowIfNullOrEmpty(nameof(password));
+            email.ThrowIfNullOrEmpty(nameof(email));
 
             var handler = new HttpClientHandler {Proxy = proxy};
             return new UserSettingsConnection(email, password, handler);
@@ -55,34 +57,31 @@ namespace GTmetrix.Http
 
         internal async Task<IApiResponse<TResponse>> Execute<TResponse>(ApiRequest apiRequest, CancellationToken cancellationToken)
         {
-            //Todo: Cache login results 
-            var loginResults = await Login(cancellationToken);
-
-            if (loginResults.Body != null && loginResults.Body.Success)
+            if (!IsAuthenticated())
             {
-                using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
+                var loginResults = await Login(cancellationToken);
+
+                if (loginResults.Body == null ||  !loginResults.Body.Success)
+                    return Helper.CreateFailedResponse<TResponse>("failed to login", HttpStatusCode.BadRequest);
+
+                _lastSuccessfulAuthentication = DateTime.Now;
+            }
+
+            using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
+            {
+                if (HasPostData(apiRequest))
                 {
-                    if (apiRequest.Method == HttpMethod.Post && !(apiRequest.Body is NoInstructionsRequest) && apiRequest.Body != null)
-                    {
-                        var content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
-                        requestMessage.Content = content;
+                    requestMessage.Content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
 
-                        if (!string.IsNullOrEmpty(apiRequest.Referer))
+                    if (!string.IsNullOrEmpty(apiRequest.Referer))
                             requestMessage.Headers.Add("Referer", _ApiUrl + apiRequest.Referer);
-                    }
-
-                    using (var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
-                    {
-                       // var debug = await responseMessage.Content.ReadAsStringAsync();
-
-                        return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
-                    }
                 }
-            }
-            else
-            {
-                return Helper.CreateFailedResponse<TResponse>("failed to login", HttpStatusCode.BadRequest);
-            }
+
+                using (var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
+                {
+                    return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
+                }
+             }
         }
 
         private async Task<IApiResponse<UserSettingsRequestResult>> Login(CancellationToken cancellationToken)
@@ -93,13 +92,10 @@ namespace GTmetrix.Http
                 keyValues.Add(new KeyValuePair<string, string>("email", _email));
                 keyValues.Add(new KeyValuePair<string, string>("password", _password));
 
-                var content = new FormUrlEncodedContent(keyValues);
-                requestMessage.Content = content;
+                requestMessage.Content = new FormUrlEncodedContent(keyValues);
 
                 using (var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                    // var debug = await responseMessage.Content.ReadAsStringAsync();
-
                     return await BuildResponse<UserSettingsRequestResult>(responseMessage, cancellationToken).ConfigureAwait(false);
                 }
             }
@@ -115,10 +111,36 @@ namespace GTmetrix.Http
             };
         }
 
+        private bool IsAuthenticated()
+        {
+            if ((DateTime.Now - _lastSuccessfulAuthentication).TotalMinutes > _authenticationTimeout)
+            {
+                return false;
+            }
+            else
+            {
+                // Todo: Check cookies
+                if (_cookies.Count != 0)
+                {
+                    return true;
+                }
+                    
+                return false;
+            }
+        }
+
+        private bool HasPostData(ApiRequest apiRequest)
+        {
+            if (apiRequest.Method == HttpMethod.Post && !(apiRequest.Body is NoInstructionsRequest) && apiRequest.Body != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         private async Task<T> ParseResponseMessageToObject<T>(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
-            //var debug = await responseMessage.Content.ReadAsStringAsync();
-
             using (var stream = await responseMessage.Content.ReadAsStreamAsync())
             {
                 //Todo: Implement cancellationToken support
@@ -155,9 +177,7 @@ namespace GTmetrix.Http
                 var errorResponse = await ParseResponseMessageToObject<ErrorResult>(message, cancellationToken).ConfigureAwait(false);
 
                 if (errorResponse != null)
-                {
                     response.Error = errorResponse.Error;
-                }
             }
 
             return response;

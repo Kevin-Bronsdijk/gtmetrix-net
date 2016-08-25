@@ -43,8 +43,8 @@ namespace GTmetrix.Http
 
         public static Connection Create(string apiKey, string username, IWebProxy proxy = null)
         {
-            apiKey.ThrowIfNullOrEmpty("apiKey");
-            username.ThrowIfNullOrEmpty("username");
+            apiKey.ThrowIfNullOrEmpty(nameof(apiKey));
+            username.ThrowIfNullOrEmpty(nameof(username));
 
             var handler = new HttpClientHandler {Proxy = proxy};
             return new Connection(apiKey, username, handler);
@@ -57,16 +57,11 @@ namespace GTmetrix.Http
             {
                 if (!(apiRequest.Body is NoInstructionsRequest) && apiRequest.Body != null)
                 {
-                    var content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
-                    requestMessage.Content = content;
+                    requestMessage.Content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
                 }
 
-                using (
-                    var responseMessage =
-                        await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
+                using (var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                   // var debug = await responseMessage.Content.ReadAsStringAsync();
-
                     return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
                 }
             }
@@ -76,10 +71,8 @@ namespace GTmetrix.Http
         {
             using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
             {
-                using (
-                    var responseMessage =
-                        await _client.SendAsync(requestMessage, 
-                        HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
+                using (var responseMessage = await _client.SendAsync(requestMessage, 
+                    HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                 {
                     var response = new ApiResponse<Byte[]>
                     {
@@ -116,8 +109,6 @@ namespace GTmetrix.Http
 
         private async Task<T> ParseResponseMessageToObject<T>(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
-            //var debug = await responseMessage.Content.ReadAsStringAsync();
-
             using (var stream = await responseMessage.Content.ReadAsStreamAsync())
             {
                 //Todo: Implement cancellationToken support
@@ -139,14 +130,11 @@ namespace GTmetrix.Http
             }
             else
             {
-                var errorResponse =
-                    await
-                        ParseResponseMessageToObject<ErrorResult>(message, cancellationToken).ConfigureAwait(false);
+                var errorResponse = 
+                    await ParseResponseMessageToObject<ErrorResult>(message, cancellationToken).ConfigureAwait(false);
 
                 if (errorResponse != null)
-                {
                     response.Error = errorResponse.Error;
-                }
             }
 
             return response;

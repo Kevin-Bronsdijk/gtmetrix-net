@@ -43,9 +43,8 @@ namespace Tests
             {
                 userSettings.FirstName = "Kevin";
             }
-                
-            var responseAfterUpdate = client.UpdateSettings(userSettings);
 
+            var responseAfterUpdate = client.UpdateSettings(userSettings);
             var resultAfterUpdate = responseAfterUpdate.Result;
 
             Assert.IsTrue(resultAfterUpdate.StatusCode == HttpStatusCode.OK);
