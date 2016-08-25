@@ -1,3 +1,4 @@
+using GTmetrix.Logic;
 using System;
 using System.Collections.Generic;
 
@@ -29,47 +30,42 @@ namespace GTmetrix.Model
 
         public List<KeyValuePair<string, string>> GetPostData()
         {
-            // Map properties, no reflection
+            // Map properties
             var postdata = new List<KeyValuePair<string, string>>();
 
-            postdata.Add(CreateKvP("url", Url));
-            postdata.Add(CreateKvP("location", Location.ToString()));
-            postdata.Add(CreateKvP("browser", Browser.ToString()));
-            postdata.Add(CreateKvP("x-metrix-adblock", Convert.ToInt32(EnableAdBlock).ToString()));
-            postdata.Add(CreateKvP("x-metrix-video", Convert.ToInt32(GenerateVideo).ToString()));
+            postdata.Add(Helper.CreateKvP("url", Url));
+            postdata.Add(Helper.CreateKvP("location", Location.ToString()));
+            postdata.Add(Helper.CreateKvP("browser", Browser.ToString()));
+            postdata.Add(Helper.CreateKvP("x-metrix-adblock", Convert.ToInt32(EnableAdBlock).ToString()));
+            postdata.Add(Helper.CreateKvP("x-metrix-video", Convert.ToInt32(GenerateVideo).ToString()));
 
             if (!string.IsNullOrEmpty(LoginUser))
             {
-                postdata.Add(CreateKvP("login-user", LoginUser));
-                postdata.Add(CreateKvP("login-pass", LoginPass));
+                postdata.Add(Helper.CreateKvP("login-user", LoginUser));
+                postdata.Add(Helper.CreateKvP("login-pass", LoginPass));
             }
 
             if (!string.IsNullOrEmpty(CookieData))
             {
-                postdata.Add(CreateKvP("x-metrix-cookies", LoginUser));
+                postdata.Add(Helper.CreateKvP("x-metrix-cookies", LoginUser));
             }
 
             if (!string.IsNullOrEmpty(UrlWhitelist))
             {
-                postdata.Add(CreateKvP("x-metrix-whitelist", UrlWhitelist));
+                postdata.Add(Helper.CreateKvP("x-metrix-whitelist", UrlWhitelist));
             }
 
             if (!string.IsNullOrEmpty(UrlBlacklist))
             {
-                postdata.Add(CreateKvP("x-metrix-blacklist", UrlBlacklist));
+                postdata.Add(Helper.CreateKvP("x-metrix-blacklist", UrlBlacklist));
             }
 
             if (!string.IsNullOrEmpty(ConnectionSpeed))
             {
-                postdata.Add(CreateKvP("x-metrix-throttle", ConnectionSpeed));
+                postdata.Add(Helper.CreateKvP("x-metrix-throttle", ConnectionSpeed));
             }
 
             return postdata;
-        }
-
-        internal KeyValuePair<string, string> CreateKvP(string key, string value)
-        {
-            return new KeyValuePair<string, string>(key, value);
         }
     }
 }

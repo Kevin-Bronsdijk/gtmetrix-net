@@ -3,12 +3,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using GTmetrix.Http;
 using GTmetrix.Model;
+using GTmetrix.Logic;
+using GTmetrix.Model.Internal;
 using System.Net.Http;
+using System.Net;
 
 namespace GTmetrix
 {
     /// <summary>
-    /// This is not part of the official API and therefore exposed separately.
+    /// This isn't part of the official API and therefore exposed separately.
     /// </summary>
     public class UserSettingsClient : IDisposable
     {
@@ -47,6 +50,37 @@ namespace GTmetrix
                 );
 
             return message;
+        }
+
+        public Task<IApiResponse<UserSettings>> UpdateSettings(UserSettings userSettings)
+        {
+            return UpdateSettings(userSettings, default(CancellationToken));
+        }
+
+        public Task<IApiResponse<UserSettings>> UpdateSettings(UserSettings userSettings, CancellationToken cancellationToken)
+        {
+            if (cancellationToken == null)
+            {
+                throw new ArgumentNullException(nameof(cancellationToken));
+            }
+
+            IApiResponse<UserSettings> result;
+
+            var message = _connection.Execute<UserSettingsRequestResult>
+                (
+                new ApiRequest(userSettings, "dashboard/user_settings", HttpMethod.Post, "dashboard/user_settings"),
+                cancellationToken
+                );
+
+            if (message.Result.Body != null && message.Result.Body.Success)
+            {
+                return GetSettings();
+            }
+            else
+            {
+                result = Helper.CreateFailedResponse<UserSettings>("Unable to save settings", HttpStatusCode.BadRequest);
+                return Task.FromResult(result);
+            }
         }
 
         ~UserSettingsClient()

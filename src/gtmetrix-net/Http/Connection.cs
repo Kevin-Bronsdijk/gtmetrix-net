@@ -65,7 +65,7 @@ namespace GTmetrix.Http
                     var responseMessage =
                         await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                   // var test = await responseMessage.Content.ReadAsStringAsync();
+                   // var debug = await responseMessage.Content.ReadAsStringAsync();
 
                     return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
                 }
@@ -116,12 +116,11 @@ namespace GTmetrix.Http
 
         private async Task<T> ParseResponseMessageToObject<T>(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
-            //var test = await responseMessage.Content.ReadAsStringAsync();
+            //var debug = await responseMessage.Content.ReadAsStringAsync();
 
             using (var stream = await responseMessage.Content.ReadAsStreamAsync())
             {
                 //Todo: Implement cancellationToken support
-                //await stream.CopyToAsync(responseStream2, 4096, cancellationToken);
                 return JsonConvert.DeserializeObject<T>(new StreamReader(stream).ReadToEnd(), _serializerSettings);
             }
         }

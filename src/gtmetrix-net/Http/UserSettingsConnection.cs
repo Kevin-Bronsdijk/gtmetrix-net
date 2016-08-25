@@ -14,7 +14,7 @@ using Newtonsoft.Json.Converters;
 namespace GTmetrix.Http
 {
     /// <summary>
-    /// This is not part of the official API and therefore exposed separately.
+    /// This isn't part of the official API and therefore exposed separately.
     /// </summary>
     public class UserSettingsConnection : IDisposable
     {
@@ -55,21 +55,25 @@ namespace GTmetrix.Http
 
         internal async Task<IApiResponse<TResponse>> Execute<TResponse>(ApiRequest apiRequest, CancellationToken cancellationToken)
         {
+            //Todo: Cache login results 
             var loginResults = await Login(cancellationToken);
 
             if (loginResults.Body != null && loginResults.Body.Success)
             {
                 using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
                 {
-                    if (!(apiRequest.Body is NoInstructionsRequest) && apiRequest.Body != null)
+                    if (apiRequest.Method == HttpMethod.Post && !(apiRequest.Body is NoInstructionsRequest) && apiRequest.Body != null)
                     {
                         var content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
                         requestMessage.Content = content;
+
+                        if (!string.IsNullOrEmpty(apiRequest.Referer))
+                            requestMessage.Headers.Add("Referer", _ApiUrl + apiRequest.Referer);
                     }
 
                     using (var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                     {
-                        var test = await responseMessage.Content.ReadAsStringAsync();
+                       // var debug = await responseMessage.Content.ReadAsStringAsync();
 
                         return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
                     }
@@ -94,7 +98,7 @@ namespace GTmetrix.Http
 
                 using (var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                    // var test = await responseMessage.Content.ReadAsStringAsync();
+                    // var debug = await responseMessage.Content.ReadAsStringAsync();
 
                     return await BuildResponse<UserSettingsRequestResult>(responseMessage, cancellationToken).ConfigureAwait(false);
                 }
@@ -113,7 +117,7 @@ namespace GTmetrix.Http
 
         private async Task<T> ParseResponseMessageToObject<T>(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
-            //var test = await responseMessage.Content.ReadAsStringAsync();
+            //var debug = await responseMessage.Content.ReadAsStringAsync();
 
             using (var stream = await responseMessage.Content.ReadAsStreamAsync())
             {
@@ -122,7 +126,7 @@ namespace GTmetrix.Http
                 {
                     var result = reader.ReadToEnd();
 
-                    if (Helper.IsHtml(result))
+                    if (Helper.Html.IsHtml(result))
                     {
                         return (T)Activator.CreateInstance(typeof(T), new object[] { result });
                     }

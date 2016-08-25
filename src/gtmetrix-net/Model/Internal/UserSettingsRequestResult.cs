@@ -11,9 +11,6 @@ namespace GTmetrix.Model.Internal
         [JsonProperty("target")]
         public string Target { get; set; }
 
-        [JsonProperty("payload")]
-        public Payload Payload { get; set; }
-
         [JsonProperty("message")]
         public string Message { get; set; }
     }

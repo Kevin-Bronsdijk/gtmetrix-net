@@ -1,93 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using GTmetrix.Logic;
 
 namespace GTmetrix.Model
 {
-    public class UserSettings
+    /// <summary>
+    /// This isn't part of the official API and therefore exposed separately.
+    /// </summary>
+    public class UserSettings : ITestRequest, IRequest
     {
-        public UserSettings(string value)
+        public UserSettings(string html)
         {
-            Parse(value);
+            Parse(html);
         }
 
-        private void Parse(string value)
-        {
-            //Simple parsing, don't want to include a new library
+        public string FirstName { get; set; }
 
-            FirstName = FindInputValue(value, "id=\"us-first_name\"");
-            LastName = FindInputValue(value, "id=\"us-last_name\"");
-            Email = FindInputValue(value, "id=\"us-email\"");
-            Alerts = FindInputValue(value, "id=\"us-prefs-alerts_disabled\"").Equals("1");
+        public string LastName { get; set; }
 
-            Timezone = FindSelectedOption(value, "id=\"us-prefs-timezone\"");
-            Region = FindSelectedOption(value, "id=\"us-prefs-region\"");
-            DefaultBrowser = FindSelectedOption(value, "id=\"us-prefs-browser\"");
-
-            Cdn = FindCdnInput(value);
-        }
-
-        private string FindInputValue(string source, string find)
-        {
-            try
-            {
-                var pos = source.IndexOf(find);
-                var posVal = source.IndexOf("value", pos);
-                return source.Substring(posVal + 7, 255).Split('"')[0]; ;
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
-        }
-
-        private string FindSelectedOption(string source, string find)
-        {
-            //Todo: No selection
-            try
-            {
-                var pos = source.IndexOf(find);
-                var posVal = source.IndexOf("selected", pos);
-                return source.Substring(posVal + 9, 255).Split('>')[0].Split('<')[0];
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
-        }
-
-        private List<string> FindCdnInput(string source)
-        {
-            List<string> list = new List<string>();
-
-            try
-            {
-                var pos = source.IndexOf("id=\"us-prefs-cdn\"");
-                var posVal = source.IndexOf("value", pos);
-                var items = source.Substring(pos, 255).Split('>')[1].Split('<')[0].Split('\n');
-
-                foreach (var item in items)
-                {
-                    if (item != string.Empty)
-                    {
-                        list.Add(item);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
-
-            return list;
-        }
-
-        public string FirstName { get; internal set; }
-
-        public string LastName { get; internal set; }
-
-        public string Email { get; internal set; }
+        public string Email { get; set; }
         
-        public bool Alerts { get; internal set; }
-
         public string Timezone { get; internal set; }
 
         public string Region { get; internal set; }
@@ -95,5 +26,37 @@ namespace GTmetrix.Model
         public string DefaultBrowser { get; internal set; }
 
         public List<string> Cdn { get; internal set; } = new List<string>();
+
+        private void Parse(string html)
+        {
+            // Simple parsing, don't want to include a new library
+            FirstName = Helper.Html.FindInputValue(html, "id=\"us-first_name\"");
+            LastName = Helper.Html.FindInputValue(html, "id=\"us-last_name\"");
+            Email = Helper.Html.FindInputValue(html, "id=\"us-email\"");
+
+            Timezone = Helper.Html.FindSelectedOption(html, "id=\"us-prefs-timezone\"");
+            Region = Helper.Html.FindSelectedOption(html, "id=\"us-prefs-region\"");
+            DefaultBrowser = Helper.Html.FindSelectedOption(html, "id=\"us-prefs-browser\"");
+
+            Cdn = Helper.Html.FindTextAreaValues(html, "id=\"us-prefs-cdn\"");
+        }
+
+        public List<KeyValuePair<string, string>> GetPostData()
+        {
+            // Map properties
+            var postdata = new List<KeyValuePair<string, string>>();
+
+            postdata.Add(Helper.CreateKvP("first_name", FirstName));
+            postdata.Add(Helper.CreateKvP("last_name", LastName));
+            postdata.Add(Helper.CreateKvP("email", Email));
+            postdata.Add(Helper.CreateKvP("prefs:cdn", FormatCdnNewLine()));
+
+            return postdata;
+        }
+
+        private string FormatCdnNewLine()
+        {
+            return string.Join("\n", Cdn);
+        }
     }
 }

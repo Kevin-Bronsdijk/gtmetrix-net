@@ -45,7 +45,6 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\Internal\Payload.cs" />
     <Compile Include="Model\Internal\UserSettingsRequestResult.cs" />
     <Compile Include="Model\UserSettings.cs" />
     <Compile Include="UserSettingsClient.cs" />

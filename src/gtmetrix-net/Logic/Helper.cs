@@ -86,10 +86,74 @@ namespace GTmetrix.Logic
             return response;
         }
 
-        internal static bool IsHtml(string value)
+        internal static KeyValuePair<string, string> CreateKvP(string key, string value)
         {
-            // Sufficient for now
-            return value.Contains("html");
+            return new KeyValuePair<string, string>(key, value);
+        }
+
+        public static class Html
+        {
+            internal static bool IsHtml(string value)
+            {
+                // Sufficient for now
+                return value.Contains("html");
+            }
+
+            internal static string FindInputValue(string source, string find)
+            {
+                try
+                {
+                    var pos = source.IndexOf(find);
+                    var posVal = source.IndexOf("value", pos);
+                    return source.Substring(posVal + 7, 255).Split('"')[0]; ;
+                }
+                catch (Exception)
+                {
+                    //Todo: Create parse Exception
+                    return string.Empty;
+                }
+            }
+
+            internal static string FindSelectedOption(string source, string find)
+            {
+                //Todo: No selection
+                try
+                {
+                    var pos = source.IndexOf(find);
+                    var posVal = source.IndexOf("selected", pos);
+                    return source.Substring(posVal + 9, 255).Split('>')[0].Split('<')[0];
+                }
+                catch (Exception)
+                {
+                    //Todo: Create parse Exception
+                    return string.Empty;
+                }
+            }
+
+            internal static List<string> FindTextAreaValues(string source, string find)
+            {
+                List<string> list = new List<string>();
+
+                try
+                {
+                    var pos = source.IndexOf(find);
+                    var items = source.Substring(pos, 255).Split('>')[1].Split('<')[0].Split('\n');
+
+                    foreach (var item in items)
+                    {
+                        if (item != string.Empty)
+                        {
+                            list.Add(item);
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    //Todo: Create parse Exception
+                }
+
+                return list;
+            }
         }
     }
 }

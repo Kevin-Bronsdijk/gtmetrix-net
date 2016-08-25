@@ -266,7 +266,7 @@ namespace GTmetrix
         {
             if (retryInterval < 2 && retryInterval > 60)
             {
-                throw new ArgumentException("retryInterval must be 2 and 60 seconds");
+                throw new ArgumentException("RetryInterval must be 2 and 60 seconds");
             }
         }
 
