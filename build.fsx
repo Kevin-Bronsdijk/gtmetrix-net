@@ -13,10 +13,10 @@ open Fake.AssemblyInfoFile
 let project = "gtmetrix-net"
 let authors = ["Kevin Bronsdijk"]
 let summary = "GTmetrix-net .Net client"
-let version = "0.0.1.8"
+let version = "0.0.1.9"
 let description = "The GTmetrix-net .Net client interacts with the GTmetrix.com REST API allowing you to utilize GTmetrixs features using a .NET interface."
-let notes = "Manage user profile settings like CDNs via the new UserSettingsClient. For more information and documentation, please visit the project site on GitHub."
-let nugetVersion = "0.1.1"
+let notes = "Connection parameter username renamed to email. For more information and documentation, please visit the project site on GitHub."
+let nugetVersion = "0.1.2"
 let tags = "gtmetrix.com gtmetrix C# API web optimization"
 let gitHome = "https://github.com/kevin-bronsdijk"
 let gitName = "gtmetrix-net"

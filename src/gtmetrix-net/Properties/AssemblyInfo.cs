@@ -4,11 +4,14 @@ using System.Reflection;
 [assembly: AssemblyTitleAttribute("gtmetrix-net")]
 [assembly: AssemblyProductAttribute("gtmetrix-net")]
 [assembly: AssemblyDescriptionAttribute("GTmetrix-net .Net client")]
-[assembly: AssemblyVersionAttribute("0.0.1.8")]
-[assembly: AssemblyFileVersionAttribute("0.0.1.8")]
+[assembly: AssemblyVersionAttribute("0.0.1.9")]
+[assembly: AssemblyFileVersionAttribute("0.0.1.9")]
 namespace System {
     internal static class AssemblyVersionInformation {
-        internal const string Version = "0.0.1.8";
-        internal const string InformationalVersion = "0.0.1.8";
+        internal const System.String AssemblyTitle = "gtmetrix-net";
+        internal const System.String AssemblyProduct = "gtmetrix-net";
+        internal const System.String AssemblyDescription = "GTmetrix-net .Net client";
+        internal const System.String AssemblyVersion = "0.0.1.9";
+        internal const System.String AssemblyFileVersion = "0.0.1.9";
     }
 }

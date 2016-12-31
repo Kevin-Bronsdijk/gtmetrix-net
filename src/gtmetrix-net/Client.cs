@@ -12,8 +12,8 @@ namespace GTmetrix
     public class Client : IDisposable
     {
         private Connection _connection;
-        private static int _defaultRetryInterval = 3;
-        private static int _maxRetryCount = 10;
+        private const int DefaultRetryInterval = 3;
+        private const int MaxRetryCount = 10;
 
         public Client(Connection connection)
         {
@@ -64,7 +64,7 @@ namespace GTmetrix
 
         public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest, CancellationToken cancellationToken)
         {
-            return await SubmitTestAsync(testRequest, _defaultRetryInterval, cancellationToken);
+            return await SubmitTestAsync(testRequest, DefaultRetryInterval, cancellationToken);
         }
 
         public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest, int retryInterval, 
@@ -135,7 +135,7 @@ namespace GTmetrix
 
         public async Task<IApiResponse<TestResult>> GetTestAsync(string testId, CancellationToken cancellationToken)
         {
-            return await GetTestAsync(testId, _defaultRetryInterval, cancellationToken);
+            return await GetTestAsync(testId, DefaultRetryInterval, cancellationToken);
         }
 
         public async Task<IApiResponse<TestResult>> GetTestAsync(string testId, int retryInterval, CancellationToken cancellationToken)
@@ -147,7 +147,7 @@ namespace GTmetrix
 
             do
             {
-                if (fetchCounter > _maxRetryCount)
+                if (fetchCounter > MaxRetryCount)
                 {
                     result = Helper.CreateFailedResponse<TestResult>("Maximum retry count exceeded");
                     break;

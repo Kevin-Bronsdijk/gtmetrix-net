@@ -10,7 +10,7 @@ namespace Tests
     {
         public static Client CreateWorkingClient()
         {
-            var connection = Connection.Create(Settings.ApiKey, Settings.Username);
+            var connection = Connection.Create(Settings.ApiKey, Settings.Email);
             return new Client(connection);
         }
 

@@ -17,12 +17,12 @@ namespace GTmetrix.Http
     public class Connection : IDisposable
     {
         private readonly string _apiKey;
-        private readonly string _username;
+        private readonly string _email;
         private readonly Uri _ApiUrl = new Uri("https://gtmetrix.com/api/");
         private HttpClient _client;
         private JsonSerializerSettings _serializerSettings;
 
-        internal Connection(string apiKey, string username, HttpMessageHandler handler)
+        internal Connection(string apiKey, string email, HttpMessageHandler handler)
         {
             _client = new HttpClient(handler) {BaseAddress = _ApiUrl};
             _client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -30,7 +30,7 @@ namespace GTmetrix.Http
             ConfigureSerialization();
 
             _apiKey = apiKey;
-            _username = username;
+            _email = email;
 
             SetAuthenticationHeader();
         }
@@ -67,14 +67,14 @@ namespace GTmetrix.Http
             }
         }
 
-        internal async Task<IApiResponse<Byte[]>> Download(ApiRequest apiRequest, CancellationToken cancellationToken)
+        internal async Task<IApiResponse<byte[]>> Download(ApiRequest apiRequest, CancellationToken cancellationToken)
         {
             using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
             {
                 using (var responseMessage = await _client.SendAsync(requestMessage, 
                     HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
                 {
-                    var response = new ApiResponse<Byte[]>
+                    var response = new ApiResponse<byte[]>
                     {
                         StatusCode = responseMessage.StatusCode,
                         Success = responseMessage.IsSuccessStatusCode
@@ -103,7 +103,7 @@ namespace GTmetrix.Http
 
         private void SetAuthenticationHeader()
         {
-            var byteArray = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", _username, _apiKey));
+            var byteArray = Encoding.ASCII.GetBytes($"{_email}:{_apiKey}");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
         }
 
