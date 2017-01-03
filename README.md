@@ -40,13 +40,13 @@ Install-Package gtmetrix-net
 
 ### Authentication
 
-The first step is to authenticate by providing your unique API Key and Username while creating a new client connection. Use your e-mail address as the username.
+The first step is to authenticate by providing your unique API Key and Username while creating a new client connection.
 
 ```C#
 using GTmetrix;
 using GTmetrix.Http;
 
-var connection = Connection.Create("Api_Key", "Username");
+var connection = Connection.Create("Api_Key", "Email");
 ```
 
 ### Submit a test request
