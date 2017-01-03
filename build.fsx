@@ -13,10 +13,10 @@ open Fake.AssemblyInfoFile
 let project = "gtmetrix-net"
 let authors = ["Kevin Bronsdijk"]
 let summary = "GTmetrix-net .Net client"
-let version = "0.0.1.9"
+let version = getBuildParam "version"
 let description = "The GTmetrix-net .Net client interacts with the GTmetrix.com REST API allowing you to utilize GTmetrixs features using a .NET interface."
 let notes = "Connection parameter username renamed to email. For more information and documentation, please visit the project site on GitHub."
-let nugetVersion = "0.1.2"
+let nugetVersion = getBuildParam "version"
 let tags = "gtmetrix.com gtmetrix C# API web optimization"
 let gitHome = "https://github.com/kevin-bronsdijk"
 let gitName = "gtmetrix-net"
@@ -71,7 +71,8 @@ Target "CreatePackage" (fun _ ->
         {p with
             Authors = authors
             Dependencies = nugetDependencies
-            Files = [@"gtmetrix.dll", Some @"lib/net452", None]
+            Files = [ (@"gtmetrix.dll", Some @"lib/net452", None);
+                        (@"gtmetrix.dll", Some @"lib/net45", None) ] 
             Project = project
             Description = description
             OutputPath = packagingOutputPath
