@@ -3,7 +3,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/q5bowvblktu9hs9a?svg=true)](https://ci.appveyor.com/project/Kevin-Bronsdijk/gtmetrix-net) [![NuGet](https://img.shields.io/nuget/v/gtmetrix-net.svg)](https://www.nuget.org/packages/gtmetrix-net/)
 ***
 
-### GTmetrix .Net client targeting .Net framework version 4.5.2 and higher.
+### GTmetrix .Net client targeting .Net framework version 4.5 and higher.
 NuGet Package available on [NuGet](https://www.nuget.org/packages/gtmetrix-net/).
 
 GTmetrix-net, a wrapper around the GTmetrix API, offers .Net developers an easy way to utilize GTmetrix's performance testing service. Using the GTmetrix-net, you can integrate performance testing into your development environment or into your application using a simple .net interface.
