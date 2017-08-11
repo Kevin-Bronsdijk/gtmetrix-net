@@ -90,7 +90,7 @@ namespace GTmetrix
                 // Always wait first
                 await Task.Delay(TimeToWait(retryInterval), cancellationToken);
 
-                var testResult = await GetTestAsync(submitTestResult.Body.TestId, 
+                var testResult = await GetTestAsync(submitTestResult.Body.TestId, retryInterval,
                     cancellationToken).ConfigureAwait(false);
 
                 return testResult;
