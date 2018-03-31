@@ -51,5 +51,11 @@ namespace GTmetrix.Model
         /// </summary>
         [JsonProperty("page_elements")]
         public int PageElements { get; set; }
+
+        /// <summary>
+        /// Fully loaded time
+        /// </summary>
+        [JsonProperty("fully_loaded_time")]
+        public int FullyLoadedTime { get; set; }
     }
 }
