@@ -12,7 +12,7 @@ namespace GTmetrix.Model
 
         public int Browser { get; set; }
 
-        public string LoginUser {get; set;}
+        public string LoginUser {get; set; }
 
         public string LoginPass { get; set; }
 
