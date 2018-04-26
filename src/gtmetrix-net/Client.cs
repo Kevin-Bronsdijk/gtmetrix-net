@@ -122,7 +122,6 @@ namespace GTmetrix
             return message;
         }
 
-
         public async Task<IApiResponse<TestResult>> GetTestAsync(string testId)
         {
             return await GetTestAsync(testId, default(CancellationToken));
