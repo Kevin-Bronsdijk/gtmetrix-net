@@ -1,4 +1,3 @@
-﻿
 namespace Tests
 {
     public static class TestData
