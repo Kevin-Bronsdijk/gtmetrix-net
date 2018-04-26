@@ -46,4 +46,3 @@ namespace GTmetrix.Model
         public bool Throttle { get; set; }
     }
 }
-
