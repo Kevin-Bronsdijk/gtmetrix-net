@@ -1,4 +1,3 @@
-﻿
 namespace GTmetrix.Model
 {
     public enum ResultStates

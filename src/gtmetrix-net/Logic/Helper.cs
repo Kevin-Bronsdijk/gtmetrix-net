@@ -105,7 +105,7 @@ namespace GTmetrix.Logic
                 {
                     var pos = source.IndexOf(find);
                     var posVal = source.IndexOf("value", pos);
-                    return source.Substring(posVal + 7, 255).Split('"')[0]; ;
+                    return source.Substring(posVal + 7, 255).Split('"')[0];
                 }
                 catch (Exception)
                 {
