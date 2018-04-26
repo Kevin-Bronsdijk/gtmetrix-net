@@ -25,7 +25,6 @@ namespace Tests
             Assert.IsTrue(result.Body.Email == Settings.Email);
         }
 
-
         [TestMethod]
         public void UserSettingsClient_UpdateSettings_IsTrue()
         {
