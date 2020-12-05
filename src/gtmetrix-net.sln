@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30709.64
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTmetrix-net", "gtmetrix-net\gtmetrix-net.csproj", "{069A5E30-E2F3-4673-A1AC-DDF5B4320EC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gtmetrix-net", "gtmetrix-net\gtmetrix-net.csproj", "{069A5E30-E2F3-4673-A1AC-DDF5B4320EC9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{53C482D3-6ECD-437F-8B51-BE9EDAD04377}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebTest", "WebTest\WebTest.csproj", "{4E46AF39-315F-4D8A-B976-8817A03ADACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gtmetrix-net5", "gtmetrix-net5\gtmetrix-net5.csproj", "{A333EEB9-D143-4B36-AFB4-8B468FEA4D6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests-net5", "Tests-net5\Tests-net5.csproj", "{1654942C-FF83-490A-855D-05E3E28E50AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,8 +31,19 @@ Global
 		{4E46AF39-315F-4D8A-B976-8817A03ADACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E46AF39-315F-4D8A-B976-8817A03ADACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E46AF39-315F-4D8A-B976-8817A03ADACC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A333EEB9-D143-4B36-AFB4-8B468FEA4D6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A333EEB9-D143-4B36-AFB4-8B468FEA4D6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A333EEB9-D143-4B36-AFB4-8B468FEA4D6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A333EEB9-D143-4B36-AFB4-8B468FEA4D6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1654942C-FF83-490A-855D-05E3E28E50AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1654942C-FF83-490A-855D-05E3E28E50AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1654942C-FF83-490A-855D-05E3E28E50AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1654942C-FF83-490A-855D-05E3E28E50AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C00598D6-150A-4461-92C9-E844D54DC027}
 	EndGlobalSection
 EndGlobal
