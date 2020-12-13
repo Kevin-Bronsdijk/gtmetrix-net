@@ -20,12 +20,12 @@ namespace GTmetrix5.Http
     {
         private readonly string _password;
         private readonly string _email;
-        private readonly Uri _ApiUrl = new Uri("https://gtmetrix.com/");
+        private readonly Uri _ApiUrl = new("https://gtmetrix.com/");
         private HttpClient _client;
         private JsonSerializerSettings _serializerSettings;
-        CookieContainer _cookies = new CookieContainer();
+        private readonly CookieContainer _cookies = new();
         DateTime _lastSuccessfulAuthentication;
-        private int _authenticationTimeout = 5;
+        private readonly int _authenticationTimeout = 5;
 
         internal UserSettingsConnection(string email, string password, HttpClientHandler handler)
         {
@@ -67,38 +67,30 @@ namespace GTmetrix5.Http
                 _lastSuccessfulAuthentication = DateTime.Now;
             }
 
-            using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
+            using var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri);
+            if (HasPostData(apiRequest))
             {
-                if (HasPostData(apiRequest))
-                {
-                    requestMessage.Content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
+                requestMessage.Content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
 
-                    if (!string.IsNullOrEmpty(apiRequest.Referer))
-                        requestMessage.Headers.Add("Referer", _ApiUrl + apiRequest.Referer);
-                }
-
-                using (var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
-                {
-                    return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
-                }
+                if (!string.IsNullOrEmpty(apiRequest.Referer))
+                    requestMessage.Headers.Add("Referer", _ApiUrl + apiRequest.Referer);
             }
+
+            using var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+            return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<IApiResponse<UserSettingsRequestResult>> Login(CancellationToken cancellationToken)
         {
-            using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, "login/"))
-            {
-                List<KeyValuePair<string, string>> keyValues = new List<KeyValuePair<string, string>>();
-                keyValues.Add(new KeyValuePair<string, string>("email", _email));
-                keyValues.Add(new KeyValuePair<string, string>("password", _password));
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Post, "login/");
+            List<KeyValuePair<string, string>> keyValues = new();
+            keyValues.Add(new KeyValuePair<string, string>("email", _email));
+            keyValues.Add(new KeyValuePair<string, string>("password", _password));
 
-                requestMessage.Content = new FormUrlEncodedContent(keyValues);
+            requestMessage.Content = new FormUrlEncodedContent(keyValues);
 
-                using (var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
-                {
-                    return await BuildResponse<UserSettingsRequestResult>(responseMessage, cancellationToken).ConfigureAwait(false);
-                }
-            }
+            using var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+            return await BuildResponse<UserSettingsRequestResult>(responseMessage, cancellationToken).ConfigureAwait(false);
         }
 
         private void ConfigureSerialization()
@@ -140,23 +132,15 @@ namespace GTmetrix5.Http
 
         private async Task<T> ParseResponseMessageToObject<T>(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
-            using (var stream = await responseMessage.Content.ReadAsStreamAsync())
-            {
-                //Todo: Implement cancellationToken support
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    var result = reader.ReadToEnd();
+            using var stream = await responseMessage.Content.ReadAsStreamAsync();
+            //Todo: Implement cancellationToken support
+            using StreamReader reader = new(stream);
+            var result = reader.ReadToEnd();
 
-                    if (Helper.Html.IsHtml(result))
-                    {
-                        return (T)Activator.CreateInstance(typeof(T), new object[] { result });
-                    }
-                    else
-                    {
-                        return JsonConvert.DeserializeObject<T>(result, _serializerSettings);
-                    }
-                }
-            }
+            if (Helper.Html.IsHtml(result))
+                return (T)Activator.CreateInstance(typeof(T), new object[] { result });
+            else
+                return JsonConvert.DeserializeObject<T>(result, _serializerSettings);
         }
 
         private async Task<IApiResponse<TResponse>> BuildResponse<TResponse>(HttpResponseMessage message, CancellationToken cancellationToken)

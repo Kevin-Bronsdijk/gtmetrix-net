@@ -53,42 +53,32 @@ namespace GTmetrix5.Http
         internal async Task<IApiResponse<TResponse>> Execute<TResponse>(ApiRequest apiRequest,
             CancellationToken cancellationToken)
         {
-            using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
-            {
-                if (!(apiRequest.Body is NoInstructionsRequest) && apiRequest.Body != null)
-                {
-                    requestMessage.Content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
-                }
+            using var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri);
+            if (!(apiRequest.Body is NoInstructionsRequest) && apiRequest.Body != null)
+                requestMessage.Content = new FormUrlEncodedContent(apiRequest.Body.GetPostData());
 
-                using (var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
-                {
-                    return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
-                }
-            }
+            using var responseMessage = await _client.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+            return await BuildResponse<TResponse>(responseMessage, cancellationToken).ConfigureAwait(false);
         }
 
         internal async Task<IApiResponse<byte[]>> Download(ApiRequest apiRequest, CancellationToken cancellationToken)
         {
-            using (var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri))
+            using var requestMessage = new HttpRequestMessage(apiRequest.Method, apiRequest.Uri);
+            using var responseMessage = await _client.SendAsync(requestMessage,
+                HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+            var response = new ApiResponse<byte[]>
             {
-                using (var responseMessage = await _client.SendAsync(requestMessage,
-                    HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
-                {
-                    var response = new ApiResponse<byte[]>
-                    {
-                        StatusCode = responseMessage.StatusCode,
-                        Success = responseMessage.IsSuccessStatusCode
-                    };
+                StatusCode = responseMessage.StatusCode,
+                Success = responseMessage.IsSuccessStatusCode
+            };
 
-                    if (responseMessage.IsSuccessStatusCode)
-                    {
-                        var httpStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                        response.Body = Helper.ReadFully(httpStream);
-                    }
-
-                    return response;
-                }
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var httpStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                response.Body = Helper.ReadFully(httpStream);
             }
+
+            return response;
         }
 
         private void ConfigureSerialization()
@@ -109,11 +99,9 @@ namespace GTmetrix5.Http
 
         private async Task<T> ParseResponseMessageToObject<T>(HttpResponseMessage responseMessage, CancellationToken cancellationToken)
         {
-            using (var stream = await responseMessage.Content.ReadAsStreamAsync())
-            {
-                //Todo: Implement cancellationToken support
-                return JsonConvert.DeserializeObject<T>(new StreamReader(stream).ReadToEnd(), _serializerSettings);
-            }
+            using var stream = await responseMessage.Content.ReadAsStreamAsync();
+            //Todo: Implement cancellationToken support
+            return JsonConvert.DeserializeObject<T>(new StreamReader(stream).ReadToEnd(), _serializerSettings);
         }
 
         private async Task<IApiResponse<TResponse>> BuildResponse<TResponse>(HttpResponseMessage message, CancellationToken cancellationToken)

@@ -19,10 +19,7 @@ namespace GTmetrix5
 
         public Client(Connection connection)
         {
-            if (connection == null)
-                throw new ArgumentNullException(nameof(connection));
-
-            _connection = connection;
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
 
         public void Dispose()
@@ -39,13 +36,9 @@ namespace GTmetrix5
         public Task<IApiResponse<SubmitTestResult>> SubmitTest(ITestRequest testRequest, CancellationToken cancellationToken)
         {
             if (testRequest == null)
-            {
                 throw new ArgumentNullException(nameof(testRequest));
-            }
             if (cancellationToken == null)
-            {
                 throw new ArgumentNullException(nameof(cancellationToken));
-            }
 
             var message = _connection.Execute<SubmitTestResult>(
                 new ApiRequest(testRequest, "0.1/test", HttpMethod.Post),
@@ -61,7 +54,7 @@ namespace GTmetrix5
 
         public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest, int retryInterval)
         {
-            return await SubmitTestAsync(testRequest, retryInterval, default(CancellationToken));
+            return await SubmitTestAsync(testRequest, retryInterval, default);
         }
 
         public async Task<IApiResponse<TestResult>> SubmitTestAsync(ITestRequest testRequest, CancellationToken cancellationToken)
@@ -105,7 +98,7 @@ namespace GTmetrix5
 
         public Task<IApiResponse<TestResult>> GetTest(string testId)
         {
-            return GetTest(testId, default(CancellationToken));
+            return GetTest(testId, default);
         }
 
         public Task<IApiResponse<TestResult>> GetTest(string testId, CancellationToken cancellationToken)
@@ -131,7 +124,7 @@ namespace GTmetrix5
 
         public async Task<IApiResponse<TestResult>> GetTestAsync(string testId, int retryInterval)
         {
-            return await GetTestAsync(testId, retryInterval, default(CancellationToken));
+            return await GetTestAsync(testId, retryInterval, default);
         }
 
         public async Task<IApiResponse<TestResult>> GetTestAsync(string testId, CancellationToken cancellationToken)
@@ -172,15 +165,13 @@ namespace GTmetrix5
 
         public Task<IApiResponse<List<Location>>> Locations()
         {
-            return Locations(default(CancellationToken));
+            return Locations(default);
         }
 
         public Task<IApiResponse<List<Location>>> Locations(CancellationToken cancellationToken)
         {
             if (cancellationToken == null)
-            {
                 throw new ArgumentNullException(nameof(cancellationToken));
-            }
 
             var message = _connection.Execute<List<Location>>
                 (
@@ -193,15 +184,13 @@ namespace GTmetrix5
 
         public Task<IApiResponse<List<Browser>>> Browsers()
         {
-            return Browsers(default(CancellationToken));
+            return Browsers(default);
         }
 
         public Task<IApiResponse<List<Browser>>> Browsers(CancellationToken cancellationToken)
         {
             if (cancellationToken == null)
-            {
                 throw new ArgumentNullException(nameof(cancellationToken));
-            }
 
             var message = _connection.Execute<List<Browser>>
                 (
@@ -214,15 +203,13 @@ namespace GTmetrix5
 
         public Task<IApiResponse<Status>> Status()
         {
-            return Status(default(CancellationToken));
+            return Status(default);
         }
 
         public Task<IApiResponse<Status>> Status(CancellationToken cancellationToken)
         {
             if (cancellationToken == null)
-            {
                 throw new ArgumentNullException(nameof(cancellationToken));
-            }
 
             var message = _connection.Execute<Status>
                 (
@@ -235,7 +222,7 @@ namespace GTmetrix5
 
         public Task<IApiResponse<byte[]>> DownloadResource(string testId, ResourceTypes resourceType)
         {
-            return DownloadResource(testId, resourceType, default(CancellationToken));
+            return DownloadResource(testId, resourceType, default);
         }
 
         public Task<IApiResponse<byte[]>> DownloadResource(string testId, ResourceTypes resourceType,
@@ -244,9 +231,7 @@ namespace GTmetrix5
             testId.ThrowIfNullOrEmpty(nameof(testId));
 
             if (cancellationToken == null)
-            {
                 throw new ArgumentNullException(nameof(cancellationToken));
-            }
 
             //Todo: Exception
             var message = _connection.Download

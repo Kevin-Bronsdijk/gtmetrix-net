@@ -42,9 +42,7 @@ namespace GTmetrix5
         public Task<IApiResponse<UserSettings>> GetSettings(CancellationToken cancellationToken)
         {
             if (cancellationToken == null)
-            {
                 throw new ArgumentNullException(nameof(cancellationToken));
-            }
 
             var message = _connection.Execute<UserSettings>
                 (
@@ -63,9 +61,7 @@ namespace GTmetrix5
         public Task<IApiResponse<UserSettings>> UpdateSettings(UserSettings userSettings, CancellationToken cancellationToken)
         {
             if (cancellationToken == null)
-            {
                 throw new ArgumentNullException(nameof(cancellationToken));
-            }
 
             IApiResponse<UserSettings> result;
 
@@ -76,9 +72,7 @@ namespace GTmetrix5
                 );
 
             if (message.Result.Body != null && message.Result.Body.Success)
-            {
-                return GetSettings();
-            }
+                return GetSettings(cancellationToken);
             else
             {
                 result = Helper.CreateFailedResponse<UserSettings>("Unable to save settings", HttpStatusCode.BadRequest);

@@ -19,7 +19,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Argument must not be the empty string.\r\nParameter name: apiKey");
+                Assert.IsTrue(ex.Message == "Argument must not be the empty string. (Parameter 'apiKey')");
             }
             catch (Exception ex)
             {
@@ -37,7 +37,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: apiKey");
+                Assert.IsTrue(ex.Message == "Value cannot be null. (Parameter 'apiKey')");
             }
             catch (Exception ex)
             {
@@ -55,7 +55,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Argument must not be the empty string.\r\nParameter name: username");
+                Assert.IsTrue(ex.Message == "Argument must not be the empty string. (Parameter 'username')");
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: username");
+                Assert.IsTrue(ex.Message == "Value cannot be null. (Parameter 'username')");
             }
             catch (Exception ex)
             {
@@ -91,7 +91,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: connection");
+                Assert.IsTrue(ex.Message == "Value cannot be null. (Parameter 'connection')");
             }
             catch (Exception ex)
             {
@@ -111,7 +111,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: testRequest");
+                Assert.IsTrue(ex.Message == "Value cannot be null. (Parameter 'testRequest')");
             }
             catch (Exception ex)
             {
@@ -131,7 +131,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: testId");
+                Assert.IsTrue(ex.Message == "Value cannot be null. (Parameter 'testId')");
             }
             catch (Exception ex)
             {
@@ -151,7 +151,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Argument must not be the empty string.\r\nParameter name: testId");
+                Assert.IsTrue(ex.Message == "Argument must not be the empty string. (Parameter 'testId')");
             }
             catch (Exception ex)
             {
@@ -171,7 +171,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: testId");
+                Assert.IsTrue(ex.Message == "Value cannot be null. (Parameter 'testId')");
             }
             catch (Exception ex)
             {
@@ -191,7 +191,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Argument must not be the empty string.\r\nParameter name: testId");
+                Assert.IsTrue(ex.Message == "Argument must not be the empty string. (Parameter 'testId')");
             }
             catch (Exception ex)
             {
@@ -243,7 +243,7 @@ namespace Tests_net5
             }
             catch (ArgumentException ex)
             {
-                Assert.IsTrue(ex.Message == "Value cannot be null.\r\nParameter name: connection");
+                Assert.IsTrue(ex.Message == "Value cannot be null. (Parameter 'connection')");
             }
             catch (Exception ex)
             {

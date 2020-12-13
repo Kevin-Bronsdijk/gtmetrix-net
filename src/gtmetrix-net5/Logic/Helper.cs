@@ -15,13 +15,9 @@ namespace GTmetrix5.Logic
         public static void ThrowIfNullOrEmpty(this string value, string name)
         {
             if (value == null)
-            {
                 throw new ArgumentNullException(name);
-            }
             if (value == string.Empty)
-            {
                 throw new ArgumentException("Argument must not be the empty string.", name);
-            }
         }
 
         public static string GetResourceUriSuffix(ResourceTypes resourceType)
@@ -38,8 +34,7 @@ namespace GTmetrix5.Logic
                 {"Video", "video"},
             };
 
-            string value;
-            resourceTypes.TryGetValue(resourceType.ToString(), out value);
+            resourceTypes.TryGetValue(resourceType.ToString(), out string value);
 
             return value;
         }
@@ -56,8 +51,7 @@ namespace GTmetrix5.Logic
                 {"56K", "50/30/125"}
             };
 
-            string value;
-            resourceTypes.TryGetValue(connectionType.ToString(), out value);
+            resourceTypes.TryGetValue(connectionType.ToString(), out string value);
 
             return value;
         }
@@ -65,15 +59,11 @@ namespace GTmetrix5.Logic
         internal static byte[] ReadFully(Stream input)
         {
             byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream ms = new MemoryStream())
-            {
-                int read;
-                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    ms.Write(buffer, 0, read);
-                }
-                return ms.ToArray();
-            }
+            using MemoryStream ms = new();
+            int read;
+            while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                ms.Write(buffer, 0, read);
+            return ms.ToArray();
         }
 
         internal static ApiResponse<TResponse> CreateFailedResponse<TResponse>(string message,
@@ -135,7 +125,7 @@ namespace GTmetrix5.Logic
 
             internal static List<string> FindTextAreaValues(string source, string find)
             {
-                List<string> list = new List<string>();
+                List<string> list = new();
 
                 try
                 {
